@@ -93,11 +93,11 @@ async function loadProductsFromURL(url) {
             let rawImage = p.image || p.صورة || '';
             let imageArray = [];
             
-            // الربط الذكي بمجلد images النسبي الصحيح لـ GitHub Pages
             if (rawImage.trim() !== '') {
                 imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
             } else {
-                imageArray = [`./images/${prodId}.jpg`];
+                // البحث في مجلد images برقم الموديل
+                imageArray = [`images/${prodId}.jpg`];
             }
             
             let videoUrl = p.video || p.فيديو || '';
@@ -499,8 +499,8 @@ function renderAdminProducts() {
     const tbody = document.getElementById('adminProductsList');
     if (!tbody) return;
     tbody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;padding:30px;">لا توجد منتجات</td></tr>' : products.map((p, idx) => `
-        <tr><td>${p.id}</td><td><strong style="font-size:13px;">${p.name}</strong></td><td>${p.category}</td><td style="color:var(--primary);">${Number(p.price).toLocaleString()} ${CONFIG.CURRENCY}</td>
-        ` + `<td>${p.badge || '-'}</td><td><button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>
+        <tr><td>${p.id}</td><td><strong style="process-name:string; font-size:13px;">${p.name}</strong></td><td>${p.category}</td><td style="color:var(--primary);">${Number(p.price).toLocaleString()} ${CONFIG.CURRENCY}</td>
+        <td>${p.badge || '-'}</td><td><button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>
     `).join('');
 }
 function deleteProduct(id) {
