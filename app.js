@@ -4,7 +4,8 @@ const CONFIG = {
     WHATSAPP_NUMBER: "967730413413",
     WHATSAPP_NUMBER_2: "967734931886",
     ADMIN_PASSWORD: "Agate@2026",
-    CURRENCY: "ريال"
+    CURRENCY: "ريال",
+    MAIN_SITE_URL: "https://saeedthawan.github.io/yemeni-kimi/" // رابط موقعك الرئيسي للثبات عند المشاركة
 };
 
 // ===== DATA STORE =====
@@ -96,7 +97,6 @@ async function loadProductsFromURL(url) {
             if (rawImage.trim() !== '') {
                 imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
             } else {
-                // البحث في مجلد images برقم الموديل
                 imageArray = [`images/${prodId}.jpg`];
             }
             
@@ -198,6 +198,9 @@ function createProductCard(product) {
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
     const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>موديل #${product.id}</span></div>';">` : `<div class="no-image-placeholder"><span>موديل #${product.id}</span></div>`;
 
+    // رسالة واتساب موحدة بالتفاصيل الكاملة عند الطلب السريع
+    const whatsappMsg = `مرحباً، أريد طلب هذا المنتج:\n- الاسم: ${product.name}\n- الموديل: #${product.id}\n- السعر: ${product.price} ${CONFIG.CURRENCY}\n\nيرجى تأكيد الطلب.`;
+
     return `
         <div class="product-card animate-fade-up" onclick="openProductModal('${product.id}')">
             <div class="product-image">
@@ -205,8 +208,8 @@ function createProductCard(product) {
                 <div class="product-badges">${badgeHTML}</div>
                 <div class="product-actions" onclick="event.stopPropagation()">
                     <button class="action-btn add-cart" onclick="addToCart('${product.id}')" title="أضف للسلة"><i class="fas fa-cart-plus"></i></button>
-                    <a href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن: ' + product.name + ' (موديل: ' + product.id + ')')}" class="action-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                    <button class="action-btn view" onclick="openProductModal('${product.id}')"><i class="fas fa-eye"></i></button>
+                    <a href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}" class="action-btn whatsapp" target="_blank" title="اطلب عبر واتساب"><i class="fab fa-whatsapp"></i></a>
+                    <button class="action-btn view" onclick="openProductModal('${product.id}')" title="نظرة سريعة"><i class="fas fa-eye"></i></button>
                 </div>
             </div>
             <div class="product-info">
@@ -236,7 +239,7 @@ function getBadgeClass(badge) {
     return 'badge-new';
 }
 
-// ===== MODAL, GALLERY & VIDEO =====
+// ===== MODAL, GALLERY & ZOOM =====
 function openProductModal(productId) {
     const product = products.find(p => p.id == productId);
     if (!product) return;
@@ -259,6 +262,7 @@ function openProductModal(productId) {
     }
     
     const mainImgSrc = validImages.length > 0 ? validImages[0] : '';
+    const whatsappMsg = `مرحباً، أريد طلب هذا المنتج:\n- الاسم: ${product.name}\n- الموديل: #${product.id}\n- السعر: ${product.price} ${CONFIG.CURRENCY}\n\nيرجى تأكيد الطلب.`;
     
     const modalHTML = `
         <div class="modal-overlay active" id="productModal" onclick="closeProductModal(event)">
@@ -296,7 +300,7 @@ function openProductModal(productId) {
                             <p style="color:var(--text-muted);line-height:1.8;margin-bottom:24px;font-size:15px;">${product.description || 'لا يوجد وصف متاح لهذا المنتج.'}</p>
                             <div style="display:flex;gap:12px;flex-wrap:wrap;">
                                 <button class="btn-primary" onclick="addToCart('${product.id}');closeProductModal();" style="flex:1;"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-                                <a href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('مرحباً، أريد طلب: ' + product.name + ' (موديل: ' + product.id + ')')}" class="btn-secondary" target="_blank" style="flex:1;justify-content:center;background:#25D366;color:#FFF;border:none;"><i class="fab fa-whatsapp"></i> اطلب عبر واتساب</a>
+                                <a href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}" class="btn-secondary" target="_blank" style="flex:1;justify-content:center;background:#25D366;color:#FFF;border:none;"><i class="fab fa-whatsapp"></i> اطلب عبر واتساب</a>
                             </div>
                         </div>
                     </div>
@@ -448,15 +452,29 @@ function toggleCart() {
     document.getElementById('cartSidebar').classList.toggle('active');
 }
 
+// دالة طلب العنوان ثم إرسال تفاصيل السلة الكاملة للواتساب
 function checkoutWhatsApp() {
     if (cart.length === 0) return;
-    let message = '🛒 *طلب جديد من متجر عقيق يمني أصيل*\n\n*المنتجات:*\n';
+    
+    // نافذة إدخال العنوان (تحديد الموقع)
+    let userLocation = prompt("يرجى إدخال عنوان التوصيل الخاص بك (المدينة / الحي / الشارع):", "صنعاء / التحيتا / ...");
+    if (userLocation === null) return; // إذا ألغى العميل
+    
+    let message = '🛒 *طلب جديد من متجر عقيق يمني أصيل*\n\n';
+    if (userLocation.trim() !== '') {
+        message += `📍 *عنوان التوصيل:* ${userLocation}\n\n`;
+    }
+    message += '*المنتجات المطلوبة:*\n';
+    
     let total = 0;
     cart.forEach((item, index) => {
-        message += `${index + 1}. ${item.name} (موديل: ${item.id})\n   الكمية: ${item.qty} | السعر: ${(item.price * item.qty).toLocaleString()} ${CONFIG.CURRENCY}\n\n`;
+        message += `${index + 1}. ${item.name} (موديل: ${item.id})\n`;
+        message += `   الكمية: ${item.qty} | السعر: ${(item.price * item.qty).toLocaleString()} ${CONFIG.CURRENCY}\n\n`;
         total += item.price * item.qty;
     });
-    message += `\n*الإجمالي: ${total.toLocaleString()} ${CONFIG.CURRENCY}*\n\nيرجى تأكيد الطلب.`;
+    
+    message += `\n*الإجمالي الكلي: ${total.toLocaleString()} ${CONFIG.CURRENCY}*\n\nيرجى تأكيد الطلب وتحديد موعد التوصيل.`;
+    
     window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
@@ -499,7 +517,7 @@ function renderAdminProducts() {
     const tbody = document.getElementById('adminProductsList');
     if (!tbody) return;
     tbody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;padding:30px;">لا توجد منتجات</td></tr>' : products.map((p, idx) => `
-        <tr><td>${p.id}</td><td><strong style="process-name:string; font-size:13px;">${p.name}</strong></td><td>${p.category}</td><td style="color:var(--primary);">${Number(p.price).toLocaleString()} ${CONFIG.CURRENCY}</td>
+        <tr><td>${p.id}</td><td><strong style="font-size:13px;">${p.name}</strong></td><td>${p.category}</td><td style="color:var(--primary);">${Number(p.price).toLocaleString()} ${CONFIG.CURRENCY}</td>
         <td>${p.badge || '-'}</td><td><button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>
     `).join('');
 }
