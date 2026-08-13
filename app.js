@@ -93,11 +93,11 @@ async function loadProductsFromURL(url) {
             let rawImage = p.image || p.صورة || '';
             let imageArray = [];
             
-            // الربط الذكي بمجلد images تلقائياً إذا كانت الخانة فارغة
+            // الربط الذكي بمجلد images النسبي الصحيح لـ GitHub Pages
             if (rawImage.trim() !== '') {
                 imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
             } else {
-                imageArray = [`images/${prodId}.jpg`];
+                imageArray = [`./images/${prodId}.jpg`];
             }
             
             let videoUrl = p.video || p.فيديو || '';
@@ -196,7 +196,7 @@ function createProductCard(product) {
     const badgeClass = getBadgeClass(product.badge);
     const badgeHTML = product.badge ? `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
-    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>';">` : `<div class="no-image-placeholder"><span>💎 عقيق يمني</span></div>`;
+    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>موديل #${product.id}</span></div>';">` : `<div class="no-image-placeholder"><span>موديل #${product.id}</span></div>`;
 
     return `
         <div class="product-card animate-fade-up" onclick="openProductModal('${product.id}')">
@@ -232,6 +232,7 @@ function getBadgeClass(badge) {
     if (!badge) return '';
     if (badge.includes('جديد')) return 'badge-new';
     if (badge.includes('عرض')) return 'badge-sale';
+    if (badge.includes('مبيعاً')) return 'badge-hot';
     return 'badge-new';
 }
 
@@ -271,9 +272,9 @@ function openProductModal(productId) {
                         <div class="modal-image-container">
                             <div id="modalMediaContainer" style="background:var(--bg-secondary);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;">
                                 ${mainImgSrc ? 
-                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>موديل #${product.id}</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
                                      <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>` :
-                                    `<div class="no-image-placeholder"><span>💎 عقيق يمني</span></div>`
+                                    `<div class="no-image-placeholder"><span>موديل #${product.id}</span></div>`
                                 }
                             </div>
                             ${galleryHTML}
@@ -320,7 +321,7 @@ window.changeModalMedia = function(element, type, src) {
     const container = document.getElementById('modalMediaContainer');
     if (type === 'image') {
         container.innerHTML = `
-            <img src="${src}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+            <img src="${src}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>موديل #${product.id}</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
             <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>
         `;
     } else if (type === 'video') {
@@ -499,7 +500,7 @@ function renderAdminProducts() {
     if (!tbody) return;
     tbody.innerHTML = products.length === 0 ? '<tr><td colspan="6" style="text-align:center;padding:30px;">لا توجد منتجات</td></tr>' : products.map((p, idx) => `
         <tr><td>${p.id}</td><td><strong style="font-size:13px;">${p.name}</strong></td><td>${p.category}</td><td style="color:var(--primary);">${Number(p.price).toLocaleString()} ${CONFIG.CURRENCY}</td>
-        <td>${p.badge || '-'}</td><td><button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>
+        ` + `<td>${p.badge || '-'}</td><td><button class="btn-danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>
     `).join('');
 }
 function deleteProduct(id) {
