@@ -1,10 +1,10 @@
-
-products_html = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="تشكيلة كاملة من العقيق اليمني الأصلي والأحجار الكريمة والسبح الفاخرة">
+    <meta name="keywords" content="عقيق يمني, أحجار كريمة, سبح, مسباح, ياقوت, زمرد, منتجات العقيق">
     <title>المنتجات - عقيق يمني أصيل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,7 @@ products_html = '''<!DOCTYPE html>
         <div class="header-top">
             <div class="container">
                 <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
-                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+                <span>📞 للطلب: <span dir="ltr">+967 730 413 413</span> | <span dir="ltr">+967 734 931 886</span></span>
             </div>
         </div>
         <div class="header-main">
@@ -55,7 +55,7 @@ products_html = '''<!DOCTYPE html>
     </header>
 
     <!-- PRODUCTS SECTION -->
-    <section class="products" style="padding-top: 40px; min-height: 70vh;">
+    <section class="products" style="padding-top: 40px; min-height: 70vh; background: var(--bg-main);">
         <div class="container">
             <div class="section-title">
                 <h3>جميع المنتجات</h3>
@@ -117,8 +117,8 @@ products_html = '''<!DOCTYPE html>
                 </div>
                 <div class="footer-section footer-contact">
                     <h4>تواصل معنا</h4>
-                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
-                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 730 413 413</span> (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 734 931 886</span> (مازن الصانع)</p>
                     <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
                 </div>
             </div>
@@ -167,10 +167,4 @@ products_html = '''<!DOCTYPE html>
 
     <script src="app.js"></script>
 </body>
-</html>'''
-
-with open('/mnt/agents/output/products.html', 'w', encoding='utf-8') as f:
-    f.write(products_html)
-
-print("✅ products.html تم إنشاؤه بنجاح!")
-print(f"📊 الحجم: {len(products_html)} حرف")
+</html>
