@@ -1,9 +1,7 @@
-
-js_content = '''// ===== CONFIG =====
+// ===== CONFIG =====
 const CONFIG = {
-    // ⬇️ غيّر هذا الرابط برابط Google Sheets JSON الخاص بك
-    // شرح الإعداد في admin.html
-    PRODUCTS_URL: localStorage.getItem('products_url') || '',
+    // تم إضافة رابط جوجل شيت الخاص بك هنا كقيمة افتراضية
+    PRODUCTS_URL: localStorage.getItem('products_url') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTaWuGpR3GCmZ8uHFhdalvc69Cfe6olRsFw5lc34l3lvgetPfBEYktabRJb7bL-AfUjA8qpABGgMQB7/pub?gid=0&single=true&output=csv',
     WHATSAPP_NUMBER: "967730413413",
     WHATSAPP_NUMBER_2: "967734931886",
     ADMIN_PASSWORD: "Agate@2026",
@@ -64,60 +62,22 @@ function getDefaultProducts() {
             badge: "جديد",
             featured: true,
             image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=80"
-        },
-        {
-            id: 3,
-            name: "مسباح عقيق سليماني",
-            category: "مسباح",
-            price: 3500,
-            oldPrice: 4200,
-            weight: "60 جرام",
-            size: "16mm",
-            description: "مسباح يدوي من العقيق السليماني النادر مع تاج فضة عيار 925. تحفة فنية أصيلة.",
-            badge: "عرض",
-            featured: true,
-            image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&auto=format&fit=crop&q=80"
-        },
-        {
-            id: 4,
-            name: "عقيق يمني أبيض نقي",
-            category: "عقيق",
-            price: 1200,
-            oldPrice: null,
-            weight: "20 جرام",
-            size: "12mm",
-            description: "عقيق يمني أبيض شفاف نقي، مناسب للتعليقات والخواتم. نقاء استثنائي.",
-            badge: "",
-            featured: false,
-            image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&auto=format&fit=crop&q=80"
-        },
-        {
-            id: 5,
-            name: "ياقوت طبيعي خام",
-            category: "أحجار كريمة",
-            price: 5000,
-            oldPrice: 6000,
-            weight: "5 جرام",
-            size: "8mm",
-            description: "ياقوت طبيعي خام مع شهادة أصالة معتمدة. لون عميق ونقاء عالي.",
-            badge: "جديد",
-            featured: true,
-            image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=500&auto=format&fit=crop&q=80"
         }
     ];
 }
 
-// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON) =====
+// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON / CSV) =====
 async function loadProductsFromURL(url) {
     isLoading = true;
     showLoadingState();
     
     try {
-        // إذا كان الرابط من Google Sheets، حوّله لـ JSON
         let fetchUrl = url;
-        if (url.includes('docs.google.com/spreadsheets')) {
+        // إذا كان الرابط لا يحتوي على output=csv، نحاول تحويله لـ JSON
+        if (url.includes('docs.google.com/spreadsheets') && !url.includes('output=csv')) {
             const sheetId = extractSheetId(url);
-            if (sheetId) {
+            // التأكد من أن الآي دي ليس 'e' لتجنب الأخطاء مع الروابط المنشورة
+            if (sheetId && sheetId !== 'e') {
                 fetchUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
             }
         }
@@ -127,10 +87,14 @@ async function loadProductsFromURL(url) {
         
         let data = await response.text();
         
-        // معالجة استجابة Google Sheets
-        if (data.startsWith('/*O_o*/')) {
-            data = data.replace(/^\\/\\*O_o\\*\\/\\s*google\\.visualization\\.Query\\.setResponse\\(/, '')
-                       .replace(/\\);$/, '');
+        // معالجة استجابة CSV (الروابط المنشورة بصيغة csv)
+        if (fetchUrl.includes('output=csv') || data.startsWith('name,') || data.startsWith('اسم,')) {
+            products = parseCSVData(data);
+        }
+        // معالجة استجابة Google Sheets JSON العادية
+        else if (data.startsWith('/*O_o*/')) {
+            data = data.replace(/^\/\*O_o\*\/\s*google\.visualization\.Query\.setResponse\(/, '')
+                       .replace(/\);$/, '');
             const json = JSON.parse(data);
             products = parseGoogleSheetData(json);
         } else {
@@ -150,12 +114,17 @@ async function loadProductsFromURL(url) {
             size: p.size || p.الحجم || '',
             description: p.description || p.وصف || '',
             badge: p.badge || p.شارة || '',
-            featured: p.featured === true || p.مميز === 'نعم' || p.مميز === true,
+            featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
             image: p.image || p.صورة || ''
         }));
         
         saveProducts();
         showToast('✅ تم تحديث المنتجات من المصدر');
+        
+        // تحديث الواجهة فوراً بالبيانات الجديدة
+        renderProducts();
+        renderAllProducts();
+        renderAdminProducts();
         
     } catch (error) {
         console.error('Error loading products:', error);
@@ -168,8 +137,33 @@ async function loadProductsFromURL(url) {
 }
 
 function extractSheetId(url) {
-    const match = url.match(/\\/d\\/([a-zA-Z0-9-_]+)/);
+    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
     return match ? match[1] : null;
+}
+
+// دالة جديدة لقراءة وتحليل ملفات الـ CSV بدقة
+function parseCSVData(csv) {
+    const lines = csv.split(/\r?\n/);
+    if (lines.length < 2) return [];
+    
+    const headers = lines[0].split(',').map(h => h.trim());
+    const result = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        // تعبير نمطي لتقسيم الفواصل وتجاهل الفواصل الموجودة داخل علامات التنصيص
+        const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        const obj = {};
+        
+        headers.forEach((header, index) => {
+            let val = row[index] || '';
+            // تنظيف القيمة من علامات التنصيص
+            val = val.trim().replace(/^"|"$/g, '').replace(/""/g, '"');
+            obj[header] = val;
+        });
+        result.push(obj);
+    }
+    return result;
 }
 
 function parseGoogleSheetData(json) {
@@ -206,7 +200,7 @@ function showLoadingState() {
 }
 
 function hideLoadingState() {
-    // سيتم إعادة الرender تلقائياً
+    // سيتم إعادة الرender تلقائياً بواسطة الدوال الأخرى
 }
 
 // ===== SAVE DATA =====
@@ -521,17 +515,17 @@ function toggleCart() {
 function checkoutWhatsApp() {
     if (cart.length === 0) return;
     
-    let message = '🛒 *طلب جديد من متجر عقيق يمني أصيل*\\n\\n';
-    message += '*المنتجات:*\\n';
+    let message = '🛒 *طلب جديد من متجر عقيق يمني أصيل*\n\n';
+    message += '*المنتجات:*\n';
     
     let total = 0;
     cart.forEach((item, index) => {
-        message += `${index + 1}. ${item.name}\\n`;
-        message += `   الكمية: ${item.qty} | السعر: ${(item.price * item.qty).toLocaleString()} ${CONFIG.CURRENCY}\\n\\n`;
+        message += `${index + 1}. ${item.name}\n`;
+        message += `   الكمية: ${item.qty} | السعر: ${(item.price * item.qty).toLocaleString()} ${CONFIG.CURRENCY}\n\n`;
         total += item.price * item.qty;
     });
     
-    message += `\\n*الإجمالي: ${total.toLocaleString()} ${CONFIG.CURRENCY}*\\n\\n`;
+    message += `\n*الإجمالي: ${total.toLocaleString()} ${CONFIG.CURRENCY}*\n\n`;
     message += 'يرجى تأكيد الطلب وإرسال عنوان التوصيل.';
     
     window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
@@ -796,10 +790,3 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
-'''
-
-with open('/mnt/agents/output/app.js', 'w', encoding='utf-8') as f:
-    f.write(js_content)
-
-print("✅ app.js تم إنشاؤه بنجاح!")
-print(f"📊 الحجم: {len(js_content)} حرف")
