@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     renderProducts();
     renderAllProducts();
-    updateCartUI(); // هذا السطر هو المسؤول عن إظهار السلة
+    updateCartUI(); 
     renderAdminProducts();
     initURLParams();
     initSearch();
@@ -90,11 +90,19 @@ async function loadProductsFromURL(url) {
         }
         
         products = products.map((p, idx) => {
+            let prodId = p.id || p.ID || p['رقم الموديل'] || idx + 1;
             let rawImage = p.image || p.صورة || '';
-            let imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
+            let imageArray = [];
+            
+            // الفكرة العبقرية: إذا كانت خلية الصورة في الإكسل فارغة، سيبحث عن الصورة برقم الموديل في مجلد images في جيت هاب
+            if (rawImage.trim() !== '') {
+                imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
+            } else {
+                imageArray = [`images/${prodId}.jpg`];
+            }
             
             return {
-                id: p.id || p.ID || p['رقم الموديل'] || idx + 1,
+                id: prodId,
                 name: p.name || p.اسم || 'منتج بدون اسم',
                 category: p.category || p.فئة || 'عقيق',
                 price: parseFloat(p.price || p.السعر) || 0,
@@ -186,7 +194,7 @@ function createProductCard(product) {
     const badgeClass = getBadgeClass(product.badge);
     const badgeHTML = product.badge ? `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
-    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy">` : `<i class="fas fa-gem" style="font-size:50px;color:var(--primary);opacity:0.3;"></i>`;
+    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/500x500.png?text=صورة+غير+متوفرة'">` : `<i class="fas fa-gem" style="font-size:50px;color:var(--primary);opacity:0.3;"></i>`;
 
     return `
         <div class="product-card animate-fade-up" onclick="openProductModal('${product.id}')">
@@ -237,7 +245,7 @@ function openProductModal(productId) {
     if (product.images && product.images.length > 1) {
         galleryHTML = '<div class="product-gallery">';
         product.images.forEach((img, idx) => {
-            galleryHTML += `<img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeModalImage(this, '${img}')">`;
+            galleryHTML += `<img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeModalImage(this, '${img}')" onerror="this.src='https://via.placeholder.com/65x65.png?text=مفقود'">`;
         });
         galleryHTML += '</div>';
     }
@@ -256,7 +264,7 @@ function openProductModal(productId) {
                         <div class="modal-image-container">
                             <div style="background:var(--bg-secondary);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;position:relative;">
                                 ${mainImgSrc ? 
-                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" onerror="this.src='https://via.placeholder.com/500x500.png?text=صورة+غير+متوفرة'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
                                      <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>` :
                                     `<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-gem" style="font-size:80px;color:var(--primary);opacity:0.3;"></i></div>`
                                 }
