@@ -1,5 +1,4 @@
-
-return_html = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +16,7 @@ return_html = '''<!DOCTYPE html>
         <div class="header-top">
             <div class="container">
                 <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
-                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+                <span>📞 للطلب: <span dir="ltr">+967 730 413 413</span> | <span dir="ltr">+967 734 931 886</span></span>
             </div>
         </div>
         <div class="header-main">
@@ -76,23 +75,23 @@ return_html = '''<!DOCTYPE html>
             <h4>3. تكاليف الشحن عند الإرجاع</h4>
             <ul>
                 <li><strong style="color:var(--success);">في حال وجود عيب مصنعي أو كسر أو عدم مطابقة للمواصفات:</strong> يتحمل المتجر كافة تكاليف الشحن والإرجاع بالكامل.</li>
-                <li><strong style="color:var(--gray);">في حال كان الإرجاع لرغبة العميل دون وجود عيب بالمنتج:</strong> يتحمل العميل رسوم الشحن والإرجاع.</li>
+                <li><strong style="color:var(--text-muted);">في حال كان الإرجاع لرغبة العميل دون وجود عيب بالمنتج:</strong> يتحمل العميل رسوم الشحن والإرجاع.</li>
             </ul>
 
             <h4>4. آلية الاسترداد المالي</h4>
             <p>بعد وصول المنتج المرتجع إلينا وفحصه والتأكد من سلامته، يتم استرداد المبلغ للعميل عبر <strong style="color:var(--primary);">تحويل بنكي مباشر لحساب العميل (IBAN)</strong> خلال 3 إلى 5 أيام عمل.</p>
 
-            <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, var(--light), #fff); border-radius: var(--radius-lg); border-right: 4px solid var(--primary); box-shadow: var(--shadow); text-align: center;">
+            <div style="margin-top: 40px; padding: 30px; background: var(--bg-secondary); border-radius: var(--radius-lg); border-right: 4px solid var(--primary); box-shadow: var(--shadow-sm); text-align: center;">
                 <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--gold);">
                     <i class="fas fa-headset"></i>
                 </div>
                 <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 20px; font-weight: 900;">للاستفسار عن طلبات الإرجاع</h4>
-                <p style="color: var(--gray); margin-bottom: 20px; font-size: 15px;">لأي استفسار أو لتقديم طلب إرجاع، تواصل معنا مباشرة عبر الواتساب وسنكون سعداء بخدمتك فوراً.</p>
+                <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 15px;">لأي استفسار أو لتقديم طلب إرجاع، تواصل معنا مباشرة عبر الواتساب وسنكون سعداء بخدمتك فوراً.</p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://wa.me/967730413413" class="btn-primary" style="background: #25D366; color: #fff; font-size: 14px; text-decoration: none;" target="_blank">
+                    <a href="https://wa.me/967730413413" class="btn-primary" style="background: #25D366; color: #fff; font-size: 14px; text-decoration: none; box-shadow: none;" target="_blank">
                         <i class="fab fa-whatsapp"></i> محمد مقبل
                     </a>
-                    <a href="https://wa.me/967734931886" class="btn-primary" style="background: #25D366; color: #fff; font-size: 14px; text-decoration: none;" target="_blank">
+                    <a href="https://wa.me/967734931886" class="btn-primary" style="background: #25D366; color: #fff; font-size: 14px; text-decoration: none; box-shadow: none;" target="_blank">
                         <i class="fab fa-whatsapp"></i> مازن الصانع
                     </a>
                 </div>
@@ -133,8 +132,8 @@ return_html = '''<!DOCTYPE html>
                 </div>
                 <div class="footer-section footer-contact">
                     <h4>تواصل معنا</h4>
-                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
-                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 730 413 413</span> (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 734 931 886</span> (مازن الصانع)</p>
                     <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
                 </div>
             </div>
@@ -183,10 +182,4 @@ return_html = '''<!DOCTYPE html>
 
     <script src="app.js"></script>
 </body>
-</html>'''
-
-with open('/mnt/agents/output/return.html', 'w', encoding='utf-8') as f:
-    f.write(return_html)
-
-print("✅ return.html تم إنشاؤه بنجاح!")
-print(f"📊 الحجم: {len(return_html)} حرف")
+</html>
