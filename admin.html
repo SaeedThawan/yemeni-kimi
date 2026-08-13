@@ -1,9 +1,10 @@
-
-admin_html = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="لوحة التحكم وإدارة المنتجات لمتجر عقيق يمني أصيل">
+    <meta name="keywords" content="عقيق يمني, لوحة التحكم, إدارة المنتجات, متجر عقيق">
     <title>لوحة التحكم - عقيق يمني أصيل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,13 +15,13 @@ admin_html = '''<!DOCTYPE html>
     <div class="admin-panel" id="adminPanel" style="display: block; position: static;">
         <!-- OVERLAY LOGIN -->
         <div class="login-overlay" id="loginOverlay">
-            <div class="login-box">
-                <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;color:var(--primary-dark);">
+            <div class="login-box" style="background: var(--bg-card); color: var(--text-main);">
+                <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;color:#FFF;">
                     <i class="fas fa-lock"></i>
                 </div>
-                <h3 style="font-size:24px;margin-bottom:8px;">🔐 تسجيل الدخول للإدارة</h3>
-                <p style="color: var(--gray); margin-bottom: 25px; font-size: 15px;">أدخل كلمة المرور للوصول للوحة التحكم</p>
-                <input type="password" id="adminPassword" placeholder="كلمة المرور" onkeypress="if(event.key==='Enter')loginAdmin()" autocomplete="off">
+                <h3 style="font-size:24px;margin-bottom:8px;color: var(--primary);">🔐 تسجيل الدخول للإدارة</h3>
+                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 15px;">أدخل كلمة المرور للوصول للوحة التحكم</p>
+                <input type="password" id="adminPassword" placeholder="كلمة المرور" onkeypress="if(event.key==='Enter')loginAdmin()" autocomplete="off" style="background: var(--bg-main); color: var(--text-main); border: 2px solid var(--border-color);">
                 <button class="btn-primary" style="width: 100%; margin-top: 12px; border: none; cursor: pointer; font-size: 16px;" onclick="loginAdmin()">
                     <i class="fas fa-sign-in-alt"></i> دخول
                 </button>
@@ -50,46 +51,45 @@ admin_html = '''<!DOCTYPE html>
                 <div class="container">
                     
                     <!-- ===== CMS SECTION: Google Sheets Integration ===== -->
-                    <div style="background: linear-gradient(135deg, #E0F2FE, #F0F9FF); padding: 30px; border-radius: var(--radius-lg); margin-bottom: 40px; border: 2px solid #7DD3FC;">
-                        <h4 style="color: #0369A1; margin-bottom: 15px; font-size: 20px; font-weight: 900;">
+                    <div style="background: var(--bg-secondary); padding: 30px; border-radius: var(--radius-lg); margin-bottom: 40px; border: 2px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                        <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 20px; font-weight: 900;">
                             <i class="fas fa-cloud" style="margin-left:8px;"></i>
                             ربط المنتجات بـ Google Sheets (نظام التحديث الذكي)
                         </h4>
-                        <p style="color: #0C4A6E; font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
-                            <strong>💡 الحل الذكي:</strong> أي شخص من الفريق يقدر يحدّث المنتجات من Google Sheet بدون ما يدخل المبرمج!
-                            الموقع يجلب البيانات تلقائياً من الـ Sheet.
+                        <p style="color: var(--text-main); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
+                            <strong>💡 الحل الذكي:</strong> أي شخص من الفريق يقدر يحدّث المنتجات من Google Sheet والموقع يجلب البيانات تلقائياً.
                         </p>
                         
-                        <div style="background: var(--white); padding: 20px; border-radius: var(--radius); margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--dark);font-size:14px;">رابط Google Sheets (JSON):</label>
+                        <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius); margin-bottom: 20px; border: 1px solid var(--border-color);">
+                            <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text-main);font-size:14px;">رابط Google Sheets (JSON / CSV):</label>
                             <div style="display:flex;gap:10px;flex-wrap:wrap;">
                                 <input type="text" id="productsURL" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" 
-                                    style="flex:1;min-width:250px;padding:12px 16px;border:1.5px solid #E5E7EB;border-radius:var(--radius);font-family:'Tajawal',sans-serif;font-size:14px;"
+                                    style="flex:1;min-width:250px;padding:12px 16px;border:1.5px solid var(--border-color);border-radius:var(--radius);font-family:'Tajawal',sans-serif;font-size:14px;background:var(--bg-main);color:var(--text-main);"
                                     value="">
                                 <button class="btn-success" onclick="setProductsURL()" style="border:none;cursor:pointer;">
                                     <i class="fas fa-link"></i> ربط
                                 </button>
-                                <button class="btn-primary" onclick="loadProductsFromURL(document.getElementById('productsURL').value)" style="border:none;cursor:pointer;background:linear-gradient(135deg,#0284C7,#0369A1);">
+                                <button class="btn-primary" onclick="loadProductsFromURL(document.getElementById('productsURL').value)" style="border:none;cursor:pointer;">
                                     <i class="fas fa-sync-alt"></i> تحديث الآن
                                 </button>
                             </div>
-                            <p style="font-size:13px;color:var(--gray);margin-top:10px;">
+                            <p style="font-size:13px;color:var(--text-muted);margin-top:10px;">
                                 <i class="fas fa-info-circle" style="color:var(--gold);margin-left:5px;"></i>
                                 اترك الحقل فارغاً لاستخدام البيانات المحلية فقط.
                             </p>
                         </div>
                         
-                        <div style="background: #FEF3C7; padding: 20px; border-radius: var(--radius); border-right: 4px solid #F59E0B;">
-                            <h5 style="color: #92400E; margin-bottom: 12px; font-weight: 800;">📋 خطوات إعداد Google Sheets للفريق:</h5>
-                            <ol style="color: #92400E; font-size: 14px; line-height: 2.2; padding-right: 20px; margin: 0;">
-                                <li>افتح <a href="https://sheets.new" target="_blank" style="color:#92400E;text-decoration:underline;font-weight:700;">Google Sheets جديد</a> واكتب الأعمدة بالترتيب: <code style="background:#fff;padding:2px 6px;border-radius:4px;">name, category, price, oldPrice, weight, size, description, badge, featured, image</code></li>
-                                <li>املأ بيانات المنتجات في الصفوف (featured: نعم/لا)</li>
+                        <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius); border-right: 4px solid var(--gold); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: 1px solid var(--border-color);">
+                            <h5 style="color: var(--text-main); margin-bottom: 12px; font-weight: 800;">📋 خطوات إعداد Google Sheets للفريق:</h5>
+                            <ol style="color: var(--text-muted); font-size: 14px; line-height: 2.2; padding-right: 20px; margin: 0;">
+                                <li>افتح <a href="https://sheets.new" target="_blank" style="color:var(--primary);text-decoration:underline;font-weight:700;">Google Sheets جديد</a> واكتب الأعمدة بالترتيب الموضح بالنموذج.</li>
+                                <li>املأ بيانات المنتجات في الصفوف (رقم الموديل مهم جداً لجلب الصور).</li>
                                 <li>اذهب إلى <strong>File → Share → Publish to web</strong></li>
-                                <li>اختر الـ Sheet واختر <strong>Comma-separated values (.csv)</strong> ثم انشر</li>
-                                <li>انسخ الرابط والصقه في الحقل أعلاه ثم اضغط "ربط"</li>
+                                <li>اختر الـ Sheet واختر <strong>Comma-separated values (.csv)</strong> ثم انشر.</li>
+                                <li>انسخ الرابط والصقه في الحقل أعلاه ثم اضغط "ربط".</li>
                             </ol>
                             <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
-                                <a href="https://sheets.new" target="_blank" class="btn-primary" style="background:#0EA5E9;font-size:13px;padding:10px 20px;">
+                                <a href="https://sheets.new" target="_blank" class="btn-primary" style="font-size:13px;padding:10px 20px;">
                                     <i class="fas fa-external-link-alt"></i> فتح Google Sheets
                                 </a>
                                 <button class="btn-secondary" onclick="showSheetTemplate()" style="font-size:13px;padding:10px 20px;cursor:pointer;">
@@ -108,9 +108,16 @@ admin_html = '''<!DOCTYPE html>
                         
                         <div class="form-row">
                             <div class="form-group">
+                                <label>رقم الموديل (ID) *</label>
+                                <input type="text" id="prodId" placeholder="مثال: 105 أو A1 (سيُستخدم لجلب الصورة)">
+                            </div>
+                            <div class="form-group">
                                 <label>اسم المنتج *</label>
                                 <input type="text" id="prodName" placeholder="مثال: عقيق يمني كبدي درجة أولى">
                             </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>الفئة *</label>
                                 <select id="prodCategory">
@@ -120,22 +127,21 @@ admin_html = '''<!DOCTYPE html>
                                     <option value="أحجار كريمة">أحجار كريمة</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group">
                                 <label>السعر (ريال) *</label>
                                 <input type="number" id="prodPrice" placeholder="2500">
                             </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>السعر القديم (اختياري)</label>
                                 <input type="number" id="prodOldPrice" placeholder="3000">
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>رابط صورة المنتج (URL)</label>
-                            <input type="text" id="prodImage" placeholder="https://example.com/image.jpg">
+                            <div class="form-group">
+                                <label>رابط الصورة (اختياري)</label>
+                                <input type="text" id="prodImage" placeholder="اتركه فارغاً ليتم سحب الصورة برقم الموديل">
+                            </div>
                         </div>
 
                         <div class="form-row">
@@ -174,12 +180,11 @@ admin_html = '''<!DOCTYPE html>
                             </div>
                         </div>
 
-                        <input type="hidden" id="prodId">
                         <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
                             <button class="btn-success" onclick="saveProduct()">
                                 <i class="fas fa-save"></i> حفظ المنتج
                             </button>
-                            <button class="btn-secondary" style="padding: 12px 25px; color: var(--dark); border: 2px solid #E5E7EB; background: var(--white); cursor: pointer; font-weight: 700; border-radius: 30px; font-family: 'Tajawal', sans-serif;" onclick="clearForm()">
+                            <button class="btn-secondary" style="padding: 12px 25px; color: var(--text-main); border: 2px solid var(--border-color); background: var(--bg-card); cursor: pointer; font-weight: 700; border-radius: 30px; font-family: 'Tajawal', sans-serif;" onclick="clearForm()">
                                 <i class="fas fa-eraser"></i> مسح النموذج
                             </button>
                         </div>
@@ -189,13 +194,13 @@ admin_html = '''<!DOCTYPE html>
                     <h4 style="margin-bottom: 20px; font-size: 22px; font-weight: 900; color: var(--primary);">
                         <i class="fas fa-list" style="color:var(--gold);margin-left:8px;"></i>
                         قائمة المنتجات الحالية
-                        <span id="productsCount" style="font-size:14px;color:var(--gray);font-weight:500;margin-right:10px;"></span>
+                        <span id="productsCount" style="font-size:14px;color:var(--text-muted);font-weight:500;margin-right:10px;"></span>
                     </h4>
-                    <div style="overflow-x: auto; margin-bottom: 30px;">
+                    <div style="overflow-x: auto; margin-bottom: 30px; border-radius: var(--radius); border: 1px solid var(--border-color);">
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th style="width:50px;">#</th>
+                                    <th style="width:70px;">الموديل</th>
                                     <th>المنتج</th>
                                     <th>الفئة</th>
                                     <th>السعر</th>
@@ -209,26 +214,26 @@ admin_html = '''<!DOCTYPE html>
                     
                     <!-- ===== IMPORT / EXPORT ===== -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px;">
-                        <div style="padding: 30px; background: #FEF3C7; border-radius: var(--radius-lg); border-right: 4px solid #F59E0B;">
-                            <h4 style="color: #92400E; margin-bottom: 15px; font-weight: 800;">
-                                <i class="fas fa-download" style="margin-left:8px;"></i> تصدير البيانات
+                        <div style="padding: 30px; background: var(--bg-secondary); border-radius: var(--radius-lg); border-right: 4px solid var(--gold); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: 1px solid var(--border-color);">
+                            <h4 style="color: var(--text-main); margin-bottom: 15px; font-weight: 800;">
+                                <i class="fas fa-download" style="margin-left:8px; color: var(--gold);"></i> تصدير البيانات
                             </h4>
-                            <p style="color: #92400E; font-size: 14px; line-height: 1.8; margin-bottom: 18px;">
+                            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.8; margin-bottom: 18px;">
                                 احفظ نسخة من جميع المنتجات كملف JSON. مفيد للنسخ الاحتياطي أو رفع التعديلات على GitHub.
                             </p>
-                            <button class="btn-primary" onclick="exportData()" style="border:none;cursor:pointer;background:linear-gradient(135deg,#F59E0B,#D97706);">
+                            <button class="btn-primary" onclick="exportData()" style="border:none;cursor:pointer;">
                                 <i class="fas fa-file-export"></i> تصدير JSON
                             </button>
                         </div>
                         
-                        <div style="padding: 30px; background: #ECFDF5; border-radius: var(--radius-lg); border-right: 4px solid #10B981;">
-                            <h4 style="color: #065F46; margin-bottom: 15px; font-weight: 800;">
-                                <i class="fas fa-upload" style="margin-left:8px;"></i> استيراد البيانات
+                        <div style="padding: 30px; background: var(--bg-secondary); border-radius: var(--radius-lg); border-right: 4px solid var(--success); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: 1px solid var(--border-color);">
+                            <h4 style="color: var(--text-main); margin-bottom: 15px; font-weight: 800;">
+                                <i class="fas fa-upload" style="margin-left:8px; color: var(--success);"></i> استيراد البيانات
                             </h4>
-                            <p style="color: #065F46; font-size: 14px; line-height: 1.8; margin-bottom: 18px;">
+                            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.8; margin-bottom: 18px;">
                                 استورد ملف JSON محفوظ سابقاً لاستعادة المنتجات أو إضافة دفعة جديدة.
                             </p>
-                            <button class="btn-success" onclick="importData()" style="border:none;cursor:pointer;background:linear-gradient(135deg,#10B981,#059669);">
+                            <button class="btn-success" onclick="importData()" style="border:none;cursor:pointer;">
                                 <i class="fas fa-file-import"></i> استيراد JSON
                             </button>
                         </div>
@@ -240,24 +245,23 @@ admin_html = '''<!DOCTYPE html>
 
     <!-- SHEET TEMPLATE MODAL -->
     <div id="sheetTemplateModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px;">
-        <div style="background:var(--white);border-radius:var(--radius-lg);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);">
-            <div style="padding:22px;border-bottom:1px solid #F0F0F0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="background:var(--bg-card);border-radius:var(--radius-lg);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);">
+            <div style="padding:22px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;">
                 <h3 style="font-size:20px;font-weight:900;color:var(--primary);">📋 نموذج Google Sheets</h3>
-                <button onclick="document.getElementById('sheetTemplateModal').style.display='none'" style="background:var(--light);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--gray);">
+                <button onclick="document.getElementById('sheetTemplateModal').style.display='none'" style="background:var(--bg-secondary);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--text-muted);">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div style="padding:22px;">
-                <p style="color:var(--gray);margin-bottom:16px;font-size:14px;">انسخ هذه الأعمدة في الصف الأول من Google Sheet:</p>
+                <p style="color:var(--text-main);margin-bottom:16px;font-size:14px;font-weight:700;">انسخ هذه الأعمدة في الصف الأول من Google Sheet:</p>
                 <div style="background:#1E293B;color:#E2E8F0;padding:20px;border-radius:var(--radius);font-family:monospace;font-size:13px;line-height:2;overflow-x:auto;direction:ltr;text-align:left;">
-                    name | category | price | oldPrice | weight | size | description | badge | featured | image
+                    id | name | category | price | oldPrice | weight | size | description | badge | featured | image
                 </div>
-                <p style="color:var(--gray);margin-top:16px;font-size:14px;line-height:1.8;">
-                    <strong>ملاحظات:</strong><br>
-                    • <code>featured</code>: اكتب "نعم" أو "true" للمنتجات المميزة<br>
-                    • <code>badge</code>: اختيارات: جديد, عرض, الأكثر مبيعاً, نفذت الكمية<br>
-                    • <code>image</code>: رابط مباشر للصورة (URL)<br>
-                    • اترك أي خلية فارغة إذا لم يكن هناك قيمة
+                <p style="color:var(--text-muted);margin-top:16px;font-size:14px;line-height:1.8;">
+                    <strong>ملاحظات هامة:</strong><br>
+                    • <code>id</code>: هذا هو رقم الموديل (مثل 105 أو A1). وهو الذي سيستخدم لجلب الصورة من مجلد images إذا تركت خانة الصورة فارغة.<br>
+                    • <code>featured</code>: اكتب "نعم" أو "true" للمنتجات المميزة لتظهر في الرئيسية.<br>
+                    • <code>image</code>: ضع رابط مباشر، أو يمكنك تركه فارغاً وسيتم جلب الصورة تلقائياً بناءً على الموديل.<br>
                 </p>
             </div>
         </div>
@@ -271,12 +275,10 @@ admin_html = '''<!DOCTYPE html>
 
     <script src="app.js"></script>
     <script>
-        // التركيز التلقائي على حقل كلمة السر عند فتح اللوحة
         document.addEventListener('DOMContentLoaded', function() {
             const passInput = document.getElementById('adminPassword');
             if (passInput) passInput.focus();
             
-            // تحميل الرابط المحفوظ
             const savedURL = localStorage.getItem('products_url');
             if (savedURL && document.getElementById('productsURL')) {
                 document.getElementById('productsURL').value = savedURL;
@@ -288,10 +290,4 @@ admin_html = '''<!DOCTYPE html>
         }
     </script>
 </body>
-</html>'''
-
-with open('/mnt/agents/output/admin.html', 'w', encoding='utf-8') as f:
-    f.write(admin_html)
-
-print("✅ admin.html تم إنشاؤه بنجاح!")
-print(f"📊 الحجم: {len(admin_html)} حرف")
+</html>
