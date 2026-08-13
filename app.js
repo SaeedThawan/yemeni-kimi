@@ -1,6 +1,5 @@
 // ===== CONFIG =====
 const CONFIG = {
-    // رابط جوجل شيت الخاص بك
     PRODUCTS_URL: localStorage.getItem('products_url') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTaWuGpR3GCmZ8uHFhdalvc69Cfe6olRsFw5lc34l3lvgetPfBEYktabRJb7bL-AfUjA8qpABGgMQB7/pub?gid=0&single=true&output=csv',
     WHATSAPP_NUMBER: "967730413413",
     WHATSAPP_NUMBER_2: "967734931886",
@@ -90,17 +89,19 @@ async function loadProductsFromURL(url) {
         }
         
         products = products.map((p, idx) => {
-            let prodId = p.id || p.ID || p['رقم الموديل'] || idx + 1;
+            let prodId = String(p.id || p.ID || p['رقم الموديل'] || idx + 1).trim();
             let rawImage = p.image || p.صورة || '';
             let imageArray = [];
             
-            // الفكرة العبقرية: إذا كانت خلية الصورة في الإكسل فارغة، سيبحث عن الصورة برقم الموديل في مجلد images في جيت هاب
+            // الربط الذكي بمجلد images تلقائياً إذا كانت الخانة فارغة
             if (rawImage.trim() !== '') {
                 imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
             } else {
                 imageArray = [`images/${prodId}.jpg`];
             }
             
+            let videoUrl = p.video || p.فيديو || '';
+
             return {
                 id: prodId,
                 name: p.name || p.اسم || 'منتج بدون اسم',
@@ -113,7 +114,8 @@ async function loadProductsFromURL(url) {
                 badge: p.badge || p.شارة || '',
                 featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
                 images: imageArray,
-                image: imageArray.length > 0 ? imageArray[0] : ''
+                image: imageArray.length > 0 ? imageArray[0] : '',
+                video: videoUrl ? convertDriveLink(videoUrl) : ''
             };
         });
         
@@ -194,7 +196,7 @@ function createProductCard(product) {
     const badgeClass = getBadgeClass(product.badge);
     const badgeHTML = product.badge ? `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
-    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/500x500.png?text=صورة+غير+متوفرة'">` : `<i class="fas fa-gem" style="font-size:50px;color:var(--primary);opacity:0.3;"></i>`;
+    const imageHTML = product.image ? `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>';">` : `<div class="no-image-placeholder"><span>💎 عقيق يمني</span></div>`;
 
     return `
         <div class="product-card animate-fade-up" onclick="openProductModal('${product.id}')">
@@ -233,7 +235,7 @@ function getBadgeClass(badge) {
     return 'badge-new';
 }
 
-// ===== MODAL & ZOOM =====
+// ===== MODAL, GALLERY & VIDEO =====
 function openProductModal(productId) {
     const product = products.find(p => p.id == productId);
     if (!product) return;
@@ -242,15 +244,20 @@ function openProductModal(productId) {
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
     
     let galleryHTML = '';
-    if (product.images && product.images.length > 1) {
+    let validImages = product.images || [];
+
+    if (validImages.length > 0) {
         galleryHTML = '<div class="product-gallery">';
-        product.images.forEach((img, idx) => {
-            galleryHTML += `<img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeModalImage(this, '${img}')" onerror="this.src='https://via.placeholder.com/65x65.png?text=مفقود'">`;
+        validImages.forEach((img, idx) => {
+            galleryHTML += `<img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeModalMedia(this, 'image', '${img}')" onerror="this.style.display='none'">`;
         });
+        if (product.video) {
+            galleryHTML += `<div class="gallery-thumb video-thumb" onclick="changeModalMedia(this, 'video', '${product.video}')"><i class="fas fa-video"></i> فيديو</div>`;
+        }
         galleryHTML += '</div>';
     }
     
-    const mainImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
+    const mainImgSrc = validImages.length > 0 ? validImages[0] : '';
     
     const modalHTML = `
         <div class="modal-overlay active" id="productModal" onclick="closeProductModal(event)">
@@ -262,11 +269,11 @@ function openProductModal(productId) {
                 <div class="modal-body">
                     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;">
                         <div class="modal-image-container">
-                            <div style="background:var(--bg-secondary);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;position:relative;">
+                            <div id="modalMediaContainer" style="background:var(--bg-secondary);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;position:relative;display:flex;align-items:center;justify-content:center;">
                                 ${mainImgSrc ? 
-                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" onerror="this.src='https://via.placeholder.com/500x500.png?text=صورة+غير+متوفرة'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+                                    `<img src="${mainImgSrc}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
                                      <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>` :
-                                    `<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-gem" style="font-size:80px;color:var(--primary);opacity:0.3;"></i></div>`
+                                    `<div class="no-image-placeholder"><span>💎 عقيق يمني</span></div>`
                                 }
                             </div>
                             ${galleryHTML}
@@ -309,6 +316,22 @@ function closeProductModal(event) {
     if (modal) { modal.classList.remove('active'); setTimeout(() => { modal.remove(); document.body.style.overflow = ''; }, 300); }
 }
 
+window.changeModalMedia = function(element, type, src) {
+    const container = document.getElementById('modalMediaContainer');
+    if (type === 'image') {
+        container.innerHTML = `
+            <img src="${src}" id="mainModalImage" onclick="openZoom()" onerror="this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'><span>💎 عقيق يمني</span></div>'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+            <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>
+        `;
+    } else if (type === 'video') {
+        container.innerHTML = `
+            <video src="${src}" controls autoplay style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);"></video>
+        `;
+    }
+    document.querySelectorAll('.gallery-thumb').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+};
+
 function setupZoomOverlay() {
     if (!document.getElementById('zoomOverlay')) {
         document.body.insertAdjacentHTML('beforeend', `
@@ -319,11 +342,6 @@ function setupZoomOverlay() {
         `);
     }
 }
-window.changeModalImage = function(element, src) {
-    document.getElementById('mainModalImage').src = src;
-    document.querySelectorAll('.gallery-thumb').forEach(el => el.classList.remove('active'));
-    element.classList.add('active');
-};
 window.openZoom = function() {
     const mainImg = document.getElementById('mainModalImage');
     if(mainImg && mainImg.src) {
@@ -406,7 +424,7 @@ function updateCartUI() {
         itemsContainer.innerHTML = cart.map(item => `
             <div class="cart-item">
                 <button class="remove-item" onclick="removeFromCart('${item.id}')"><i class="fas fa-times"></i></button>
-                <div class="cart-item-image"><img src="${item.image || ''}"></div>
+                <div class="cart-item-image"><img src="${item.image || ''}" onerror="this.style.display='none'"></div>
                 <div class="cart-item-details">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">${Number(item.price).toLocaleString()} ${CONFIG.CURRENCY}</div>
