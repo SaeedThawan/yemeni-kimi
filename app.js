@@ -37,6 +37,20 @@ function getDefaultProducts() {
     return [];
 }
 
+// دالة لتحويل روابط جوجل درايف إلى روابط مباشرة تقرأها المواقع كصور
+function getDirectImageUrl(url) {
+    if (!url) return '';
+    url = url.trim();
+    // إذا كان الرابط من جوجل درايف، نقوم باستخراج المعرف وتحويله لرابط مباشر
+    if (url.includes('drive.google.com')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/) || url.match(/id=([a-zA-Z0-9-_]+)/);
+        if (match && match[1]) {
+            return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+        }
+    }
+    return url;
+}
+
 // ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON / CSV) =====
 async function loadProductsFromURL(url) {
     isLoading = true;
@@ -69,9 +83,9 @@ async function loadProductsFromURL(url) {
             products = Array.isArray(json) ? json : (json.products || []);
         }
         
-        // تأكد من صحة البيانات وإضافة رقم الموديل (id)
+        // تأكد من صحة البيانات وتمرير الصور لدالة التحويل
         products = products.map((p, idx) => ({
-            id: p.id || p.ID || p['رقم الموديل'] || idx + 1, // سحب رقم الموديل من الإكسل
+            id: p.id || p.ID || p['رقم الموديل'] || idx + 1, // سحب رقم الموديل
             name: p.name || p.اسم || 'منتج بدون اسم',
             category: p.category || p.فئة || 'عقيق',
             price: parseFloat(p.price || p.السعر) || 0,
@@ -81,7 +95,8 @@ async function loadProductsFromURL(url) {
             description: p.description || p.وصف || '',
             badge: p.badge || p.شارة || '',
             featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
-            image: p.image || p.صورة || ''
+            // تطبيق دالة التحويل على رابط الصورة
+            image: getDirectImageUrl(p.image || p.صورة || '')
         }));
         
         saveProducts();
@@ -580,8 +595,6 @@ function renderAdminProducts() {
         </tr>
     `).join('');
 }
-
-// ... (Rest of Admin Functions kept minimal as they rely on standard array manipulation) ...
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
