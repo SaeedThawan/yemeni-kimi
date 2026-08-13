@@ -1,5 +1,4 @@
-
-terms_html = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +16,7 @@ terms_html = '''<!DOCTYPE html>
         <div class="header-top">
             <div class="container">
                 <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
-                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+                <span>📞 للطلب: <span dir="ltr">+967 730 413 413</span> | <span dir="ltr">+967 734 931 886</span></span>
             </div>
         </div>
         <div class="header-main">
@@ -94,7 +93,7 @@ terms_html = '''<!DOCTYPE html>
             <h4>6. القانون الساري</h4>
             <p>تخضع هذه الشروط والأحكام للقوانين والأنظمة التجارية المعمول بها والمنظمة للبيع والشراء الإلكتروني.</p>
 
-            <div style="margin-top: 40px; padding: 25px; background: var(--light); border-radius: var(--radius-lg); text-align: center; color: var(--gray); border: 2px solid #E5E7EB;">
+            <div style="margin-top: 40px; padding: 25px; background: var(--bg-secondary); border-radius: var(--radius-lg); text-align: center; color: var(--text-muted); border: 2px solid var(--border-color);">
                 <i class="fas fa-gavel" style="font-size: 32px; color: var(--gold); margin-bottom: 12px; display: block;"></i>
                 <strong style="color: var(--primary); font-size: 16px;">آخر تحديث:</strong> أغسطس 2026
             </div>
@@ -134,8 +133,8 @@ terms_html = '''<!DOCTYPE html>
                 </div>
                 <div class="footer-section footer-contact">
                     <h4>تواصل معنا</h4>
-                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
-                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 730 413 413</span> (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> <span dir="ltr">+967 734 931 886</span> (مازن الصانع)</p>
                     <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
                 </div>
             </div>
@@ -184,10 +183,4 @@ terms_html = '''<!DOCTYPE html>
 
     <script src="app.js"></script>
 </body>
-</html>'''
-
-with open('/mnt/agents/output/terms.html', 'w', encoding='utf-8') as f:
-    f.write(terms_html)
-
-print("✅ terms.html تم إنشاؤه بنجاح!")
-print(f"📊 الحجم: {len(terms_html)} حرف")
+</html>
