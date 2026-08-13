@@ -17,6 +17,7 @@ let isLoading = false;
 document.addEventListener('DOMContentLoaded', async function() {
     initMobileMenu();
     initScrollAnimations();
+    setupZoomOverlay(); // تهيئة نافذة التكبير
     
     // حاول جلب المنتجات من الرابط الخارجي أولاً
     if (CONFIG.PRODUCTS_URL) {
@@ -36,37 +37,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // ===== DEFAULT PRODUCTS (Fallback) =====
 function getDefaultProducts() {
-    return [
-        {
-            id: 1,
-            name: "عقيق يمني كبدي درجة أولى",
-            category: "عقيق",
-            price: 2500,
-            oldPrice: 3000,
-            weight: "30 جرام",
-            size: "14mm",
-            description: "عقيق يمني أصلي 100% من مناجم اليمن، لون كبدي غامق مع عروق طبيعية مميزة. قطعة نادرة ومصقولة يدوياً بأعلى معايير الجودة.",
-            badge: "الأكثر مبيعاً",
-            featured: true,
-            image: "https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=500&auto=format&fit=crop&q=80"
-        },
-        {
-            id: 2,
-            name: "سبح عقيق أحمر فاخر",
-            category: "سبح",
-            price: 1800,
-            oldPrice: null,
-            weight: "45 جرام",
-            size: "10mm",
-            description: "سبح 33 خرزة من العقيق الأحمر الطبيعي، خيوط حريرية فاخرة، إنهاء يدوي متقن.",
-            badge: "جديد",
-            featured: true,
-            image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=80"
-        }
-    ];
+    return [];
 }
 
-// دالة لمعالجة روابط جوجل درايف
+// دالة لمعالجة روابط جوجل درايف (كحل احتياطي)
 function convertDriveLink(url) {
     if (!url) return '';
     url = url.trim();
@@ -79,7 +53,7 @@ function convertDriveLink(url) {
     return url;
 }
 
-// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON) =====
+// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON / CSV) =====
 async function loadProductsFromURL(url) {
     isLoading = true;
     showLoadingState();
@@ -114,7 +88,7 @@ async function loadProductsFromURL(url) {
                 products.push(obj);
             }
         }
-        // معالجة استجابة Google Sheets
+        // معالجة استجابة Google Sheets JSON
         else if (data.startsWith('/*O_o*/')) {
             data = data.replace(/^\/\*O_o\*\/\s*google\.visualization\.Query\.setResponse\(/, '')
                        .replace(/\);$/, '');
@@ -126,23 +100,29 @@ async function loadProductsFromURL(url) {
             products = Array.isArray(json) ? json : (json.products || []);
         }
         
-        // تأكد من صحة البيانات وإضافة الموديل ورابط الصورة المعدل
-        products = products.map((p, idx) => ({
-            id: p.id || p.ID || p['رقم الموديل'] || idx + 1,
-            name: p.name || p.اسم || 'منتج بدون اسم',
-            category: p.category || p.فئة || 'عقيق',
-            price: parseFloat(p.price || p.السعر) || 0,
-            oldPrice: parseFloat(p.oldPrice || p.السعر_القديم) || null,
-            weight: p.weight || p.الوزن || '',
-            size: p.size || p.الحجم || '',
-            description: p.description || p.وصف || '',
-            badge: p.badge || p.شارة || '',
-            featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
-            image: convertDriveLink(p.image || p.صورة || '')
-        }));
+        // تنظيف البيانات وإضافة دعم الصور المتعددة
+        products = products.map((p, idx) => {
+            // معالجة الصور المتعددة (فصلها بفاصلة)
+            let rawImage = p.image || p.صورة || '';
+            let imageArray = rawImage.split(',').map(img => convertDriveLink(img.trim())).filter(img => img !== '');
+            
+            return {
+                id: p.id || p.ID || p['رقم الموديل'] || idx + 1,
+                name: p.name || p.اسم || 'منتج بدون اسم',
+                category: p.category || p.فئة || 'عقيق',
+                price: parseFloat(p.price || p.السعر) || 0,
+                oldPrice: parseFloat(p.oldPrice || p.السعر_القديم) || null,
+                weight: p.weight || p.الوزن || '',
+                size: p.size || p.الحجم || '',
+                description: p.description || p.وصف || '',
+                badge: p.badge || p.شارة || '',
+                featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
+                images: imageArray, // مصفوفة لجميع الصور
+                image: imageArray.length > 0 ? imageArray[0] : '' // الصورة الرئيسية
+            };
+        });
         
         saveProducts();
-        showToast('✅ تم تحديث المنتجات من المصدر');
         
     } catch (error) {
         console.error('Error loading products:', error);
@@ -196,7 +176,7 @@ function showLoadingState() {
 }
 
 function hideLoadingState() {
-    // سيتم إعادة الرender تلقائياً
+    // الواجهة تتحدث تلقائياً بعد التحميل
 }
 
 // ===== SAVE DATA =====
@@ -272,7 +252,7 @@ function createProductCard(product) {
                        class="action-btn whatsapp" target="_blank" title="اطلب عبر واتساب">
                         <i class="fab fa-whatsapp"></i>
                     </a>
-                    <button class="action-btn view" title="عرض التفاصيل" onclick="openProductModal('${product.id}')">
+                    <button class="action-btn view" title="نظرة سريعة" onclick="openProductModal('${product.id}')">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
@@ -305,7 +285,7 @@ function getBadgeClass(badge) {
     return 'badge-new';
 }
 
-// ===== PRODUCT MODAL =====
+// ===== PRODUCT MODAL (نظرة سريعة ومعرض الصور) =====
 function openProductModal(productId) {
     const product = products.find(p => p.id == productId);
     if (!product) return;
@@ -313,6 +293,18 @@ function openProductModal(productId) {
     const badgeClass = getBadgeClass(product.badge);
     const badgeHTML = product.badge ? `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
     const oldPriceHTML = product.oldPrice ? `<span class="old-price" style="font-size:18px;">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
+    
+    // إنشاء معرض الصور إذا كان هناك أكثر من صورة
+    let galleryHTML = '';
+    if (product.images && product.images.length > 1) {
+        galleryHTML = '<div class="product-gallery">';
+        product.images.forEach((img, idx) => {
+            galleryHTML += `<img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="changeModalImage(this, '${img}')">`;
+        });
+        galleryHTML += '</div>';
+    }
+    
+    const mainImgSrc = product.images && product.images.length > 0 ? product.images[0] : '';
     
     const modalHTML = `
         <div class="modal-overlay active" id="productModal" onclick="closeProductModal(event)">
@@ -322,13 +314,19 @@ function openProductModal(productId) {
                     <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-                        <div style="background:linear-gradient(135deg,#F8F8F8,#F0F0F0);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
-                            ${product.image ? 
-                                `<img src="${product.image}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;">` :
-                                `<i class="fas fa-gem" style="font-size:80px;color:var(--primary);opacity:0.3;"></i>`
-                            }
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;">
+                        
+                        <div class="modal-image-container">
+                            <div style="background:linear-gradient(135deg,#F8F8F8,#F0F0F0);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;position:relative;">
+                                ${mainImgSrc ? 
+                                    `<img src="${mainImgSrc}" id="mainModalImage" alt="${product.name}" onclick="openZoom()" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;">
+                                     <div class="zoom-hint"><i class="fas fa-search-plus"></i> اضغط للتكبير</div>` :
+                                    `<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-gem" style="font-size:80px;color:var(--primary);opacity:0.3;"></i></div>`
+                                }
+                            </div>
+                            ${galleryHTML}
                         </div>
+
                         <div>
                             <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center;">
                                 ${badgeHTML}
@@ -343,13 +341,13 @@ function openProductModal(productId) {
                                 ${product.weight ? `<span><i class="fas fa-weight-hanging" style="color:var(--gold);"></i> ${product.weight}</span>` : ''}
                                 ${product.size ? `<span><i class="fas fa-ruler" style="color:var(--gold);"></i> ${product.size}</span>` : ''}
                             </div>
-                            <p style="color:var(--gray);line-height:1.8;margin-bottom:24px;font-size:15px;">${product.description || 'لا يوجد وصف'}</p>
+                            <p style="color:var(--gray);line-height:1.8;margin-bottom:24px;font-size:15px;">${product.description || 'لا يوجد وصف متاح لهذا المنتج.'}</p>
                             <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                                <button class="btn-primary" onclick="addToCart('${product.id}');closeProductModal();" style="border:none;cursor:pointer;">
+                                <button class="btn-primary" onclick="addToCart('${product.id}');closeProductModal();" style="border:none;cursor:pointer;flex:1;">
                                     <i class="fas fa-cart-plus"></i> أضف للسلة
                                 </button>
                                 <a href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('مرحباً، أريد طلب: ' + product.name + ' (موديل: ' + product.id + ')')}" 
-                                   class="btn-secondary" target="_blank" style="background:#25D366;color:#fff;border-color:#25D366;">
+                                   class="btn-secondary" target="_blank" style="background:#25D366;color:#fff;border-color:#25D366;flex:1;justify-content:center;">
                                     <i class="fab fa-whatsapp"></i> اطلب عبر واتساب
                                 </a>
                             </div>
@@ -360,7 +358,7 @@ function openProductModal(productId) {
         </div>
     `;
     
-    // إزالة أي مودال سابق
+    // إزالة المودال القديم إن وجد
     const oldModal = document.getElementById('productModal');
     if (oldModal) oldModal.remove();
     
@@ -375,10 +373,41 @@ function closeProductModal(event) {
         modal.classList.remove('active');
         setTimeout(() => {
             modal.remove();
-            document.body.style.overflow = '';
+            document.body.style.overflow = ''; // استعادة التمرير
         }, 300);
     }
 }
+
+// ===== ZOOM FUNCTIONS (التكبير) =====
+function setupZoomOverlay() {
+    if (!document.getElementById('zoomOverlay')) {
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+                <button class="close-zoom" onclick="closeZoom()" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+                <img id="zoomedImage" src="" alt="صورة مكبرة" onclick="event.stopPropagation()">
+            </div>
+        `);
+    }
+}
+
+window.changeModalImage = function(element, src) {
+    document.getElementById('mainModalImage').src = src;
+    document.querySelectorAll('.gallery-thumb').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+};
+
+window.openZoom = function() {
+    const mainImg = document.getElementById('mainModalImage');
+    if(mainImg && mainImg.src) {
+        document.getElementById('zoomedImage').src = mainImg.src;
+        document.getElementById('zoomOverlay').classList.add('active');
+    }
+};
+
+window.closeZoom = function() {
+    const overlay = document.getElementById('zoomOverlay');
+    if (overlay) overlay.classList.remove('active');
+};
 
 // ===== SEARCH =====
 function initSearch() {
@@ -434,7 +463,6 @@ function addToCart(productId) {
     updateCartUI();
     showToast(`✅ تمت إضافة "${product.name}" للسلة`);
     
-    // تأثير على زر السلة
     const cartBtn = document.querySelector('.cart-btn');
     if (cartBtn) {
         cartBtn.style.transform = 'scale(1.2)';
@@ -493,6 +521,7 @@ function updateCartUI() {
                 </div>
                 <div class="cart-item-details">
                     <div class="cart-item-name">${item.name}</div>
+                    <div style="font-size:11px; color:var(--gray); margin-bottom:4px;">موديل: #${item.id}</div>
                     <div class="cart-item-price">${Number(item.price).toLocaleString()} ${CONFIG.CURRENCY}</div>
                     <div class="cart-item-qty">
                         <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
@@ -529,7 +558,7 @@ function checkoutWhatsApp() {
     });
     
     message += `\n*الإجمالي: ${total.toLocaleString()} ${CONFIG.CURRENCY}*\n\n`;
-    message += 'يرجى تأكيد الطلب وإرسال عنوان التوصيل.';
+    message += 'يرجى تأكيد الطلب وإرسال عنوان التوصيل والتواصل.';
     
     window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
 }
@@ -562,7 +591,6 @@ function initMobileMenu() {
         }
     });
     
-    // إغلاق القائمة عند النقر على رابط
     nav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             nav.classList.remove('mobile-active');
@@ -575,7 +603,6 @@ function initMobileMenu() {
     });
 }
 
-// ===== SCROLL ANIMATIONS =====
 function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -594,7 +621,6 @@ function initScrollAnimations() {
     });
 }
 
-// ===== ADMIN LOGIC =====
 function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (password === CONFIG.ADMIN_PASSWORD) {
@@ -625,7 +651,7 @@ function renderAdminProducts() {
     
     tbody.innerHTML = products.map((p, idx) => `
         <tr>
-            <td>${idx + 1}</td>
+            <td>${p.id}</td>
             <td>
                 <div style="display:flex;align-items:center;gap:10px;">
                     ${p.image ? `<img src="${p.image}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">` : ''}
@@ -645,6 +671,7 @@ function renderAdminProducts() {
     `).join('');
 }
 
+// دالة حفظ المنتج في لوحة التحكم (الادمن)
 function saveProduct() {
     const id = document.getElementById('prodId').value;
     const product = {
@@ -780,13 +807,16 @@ function setProductsURL() {
     }
 }
 
-// ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', (e) => {
-    // ESC لإغلاق السلة أو المودال
     if (e.key === 'Escape') {
         const cartSidebar = document.getElementById('cartSidebar');
         const modal = document.getElementById('productModal');
-        if (cartSidebar && cartSidebar.classList.contains('active')) {
+        const zoomOverlay = document.getElementById('zoomOverlay');
+        
+        // إغلاق التكبير أولاً إن كان مفتوحاً
+        if (zoomOverlay && zoomOverlay.classList.contains('active')) {
+            closeZoom();
+        } else if (cartSidebar && cartSidebar.classList.contains('active')) {
             toggleCart();
         } else if (modal) {
             closeProductModal();
