@@ -386,3 +386,52 @@ body {
     .hero-content h2 { font-size: 26px; }
     .products-grid, .categories-grid, .features-grid, .footer-grid { grid-template-columns: 1fr; gap: 20px; }
 }
+/* ===== GALLERY & ZOOM STYLES (معرض الصور والتكبير) ===== */
+.modal-image-container { display: flex; flex-direction: column; gap: 12px; position: relative; }
+.zoom-hint {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.6); color: var(--white);
+    padding: 6px 12px; border-radius: 6px; font-size: 12px;
+    pointer-events: none; font-weight: 700;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.product-gallery {
+    display: flex; gap: 10px; overflow-x: auto;
+    padding-bottom: 5px; scrollbar-width: thin;
+}
+.gallery-thumb {
+    width: 65px; height: 65px; min-width: 65px;
+    object-fit: cover; border-radius: 8px; cursor: pointer;
+    border: 2.5px solid transparent; opacity: 0.5;
+    transition: all 0.3s ease; box-shadow: var(--shadow-sm);
+}
+.gallery-thumb.active, .gallery-thumb:hover {
+    opacity: 1; border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* نافذة التكبير بملء الشاشة */
+.zoom-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 15, 15, 0.95); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+.zoom-overlay.active { opacity: 1; visibility: visible; }
+.zoom-overlay img {
+    max-width: 95%; max-height: 90vh;
+    object-fit: contain; border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.close-zoom {
+    position: absolute; top: 20px; right: 25px;
+    color: var(--white); font-size: 32px;
+    cursor: pointer; background: rgba(255,255,255,0.1);
+    border: none; width: 44px; height: 44px;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    transition: var(--transition);
+}
+.close-zoom:hover { background: var(--danger); transform: scale(1.1); }
