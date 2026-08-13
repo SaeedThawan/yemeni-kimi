@@ -18,9 +18,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     initMobileMenu();
     initScrollAnimations();
     
+    // حاول جلب المنتجات من الرابط الخارجي أولاً
     if (CONFIG.PRODUCTS_URL) {
         await loadProductsFromURL(CONFIG.PRODUCTS_URL);
     } else {
+        // fallback: استخدم البيانات المحلية
         products = JSON.parse(localStorage.getItem('agates_products')) || getDefaultProducts();
     }
     
@@ -34,14 +36,40 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // ===== DEFAULT PRODUCTS (Fallback) =====
 function getDefaultProducts() {
-    return [];
+    return [
+        {
+            id: 1,
+            name: "عقيق يمني كبدي درجة أولى",
+            category: "عقيق",
+            price: 2500,
+            oldPrice: 3000,
+            weight: "30 جرام",
+            size: "14mm",
+            description: "عقيق يمني أصلي 100% من مناجم اليمن، لون كبدي غامق مع عروق طبيعية مميزة. قطعة نادرة ومصقولة يدوياً بأعلى معايير الجودة.",
+            badge: "الأكثر مبيعاً",
+            featured: true,
+            image: "https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=500&auto=format&fit=crop&q=80"
+        },
+        {
+            id: 2,
+            name: "سبح عقيق أحمر فاخر",
+            category: "سبح",
+            price: 1800,
+            oldPrice: null,
+            weight: "45 جرام",
+            size: "10mm",
+            description: "سبح 33 خرزة من العقيق الأحمر الطبيعي، خيوط حريرية فاخرة، إنهاء يدوي متقن.",
+            badge: "جديد",
+            featured: true,
+            image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=80"
+        }
+    ];
 }
 
-// دالة لتحويل روابط جوجل درايف إلى روابط مباشرة تقرأها المواقع كصور
-function getDirectImageUrl(url) {
+// دالة لمعالجة روابط جوجل درايف
+function convertDriveLink(url) {
     if (!url) return '';
     url = url.trim();
-    // إذا كان الرابط من جوجل درايف، نقوم باستخراج المعرف وتحويله لرابط مباشر
     if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/) || url.match(/id=([a-zA-Z0-9-_]+)/);
         if (match && match[1]) {
@@ -51,7 +79,7 @@ function getDirectImageUrl(url) {
     return url;
 }
 
-// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON / CSV) =====
+// ===== LOAD PRODUCTS FROM URL (Google Sheets / JSON) =====
 async function loadProductsFromURL(url) {
     isLoading = true;
     showLoadingState();
@@ -70,22 +98,37 @@ async function loadProductsFromURL(url) {
         
         let data = await response.text();
         
-        if (fetchUrl.includes('output=csv') || data.startsWith('name,') || data.startsWith('اسم,') || data.startsWith('id,')) {
-            products = parseCSVData(data);
+        // معالجة ملفات CSV
+        if (fetchUrl.includes('output=csv') || data.startsWith('name') || data.startsWith('id') || data.startsWith('اسم')) {
+            const lines = data.split(/\r?\n/);
+            const headers = lines[0].split(',').map(h => h.trim());
+            products = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const obj = {};
+                headers.forEach((header, index) => {
+                    let val = row[index] || '';
+                    obj[header] = val.trim().replace(/^"|"$/g, '').replace(/""/g, '"');
+                });
+                products.push(obj);
+            }
         }
+        // معالجة استجابة Google Sheets
         else if (data.startsWith('/*O_o*/')) {
             data = data.replace(/^\/\*O_o\*\/\s*google\.visualization\.Query\.setResponse\(/, '')
                        .replace(/\);$/, '');
             const json = JSON.parse(data);
             products = parseGoogleSheetData(json);
         } else {
+            // JSON عادي
             const json = JSON.parse(data);
             products = Array.isArray(json) ? json : (json.products || []);
         }
         
-        // تأكد من صحة البيانات وتمرير الصور لدالة التحويل
+        // تأكد من صحة البيانات وإضافة الموديل ورابط الصورة المعدل
         products = products.map((p, idx) => ({
-            id: p.id || p.ID || p['رقم الموديل'] || idx + 1, // سحب رقم الموديل
+            id: p.id || p.ID || p['رقم الموديل'] || idx + 1,
             name: p.name || p.اسم || 'منتج بدون اسم',
             category: p.category || p.فئة || 'عقيق',
             price: parseFloat(p.price || p.السعر) || 0,
@@ -95,22 +138,22 @@ async function loadProductsFromURL(url) {
             description: p.description || p.وصف || '',
             badge: p.badge || p.شارة || '',
             featured: p.featured === true || p.featured === 'true' || p.featured === 'نعم' || p.مميز === 'نعم' || p.مميز === true,
-            // تطبيق دالة التحويل على رابط الصورة
-            image: getDirectImageUrl(p.image || p.صورة || '')
+            image: convertDriveLink(p.image || p.صورة || '')
         }));
         
         saveProducts();
-        
-        renderProducts();
-        renderAllProducts();
-        renderAdminProducts();
+        showToast('✅ تم تحديث المنتجات من المصدر');
         
     } catch (error) {
         console.error('Error loading products:', error);
         products = JSON.parse(localStorage.getItem('agates_products')) || getDefaultProducts();
+        showToast('⚠️ تعذر الاتصال، تم استخدام البيانات المحلية');
     } finally {
         isLoading = false;
         hideLoadingState();
+        renderProducts();
+        renderAllProducts();
+        renderAdminProducts();
     }
 }
 
@@ -119,26 +162,18 @@ function extractSheetId(url) {
     return match ? match[1] : null;
 }
 
-function parseCSVData(csv) {
-    const lines = csv.split(/\r?\n/);
-    if (lines.length < 2) return [];
-    
-    const headers = lines[0].split(',').map(h => h.trim());
-    const result = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+function parseGoogleSheetData(json) {
+    const cols = json.table.cols.map(c => c.label);
+    const rows = json.table.rows.map(row => {
         const obj = {};
-        
-        headers.forEach((header, index) => {
-            let val = row[index] || '';
-            val = val.trim().replace(/^"|"$/g, '').replace(/""/g, '"');
-            obj[header] = val;
+        row.c.forEach((cell, i) => {
+            if (cell && cols[i]) {
+                obj[cols[i]] = cell.v;
+            }
         });
-        result.push(obj);
-    }
-    return result;
+        return obj;
+    });
+    return rows;
 }
 
 function showLoadingState() {
@@ -160,11 +195,18 @@ function showLoadingState() {
     });
 }
 
-function hideLoadingState() {}
+function hideLoadingState() {
+    // سيتم إعادة الرender تلقائياً
+}
 
 // ===== SAVE DATA =====
-function saveProducts() { localStorage.setItem('agates_products', JSON.stringify(products)); }
-function saveCart() { localStorage.setItem('agates_cart', JSON.stringify(cart)); }
+function saveProducts() {
+    localStorage.setItem('agates_products', JSON.stringify(products));
+}
+
+function saveCart() {
+    localStorage.setItem('agates_cart', JSON.stringify(cart));
+}
 
 // ===== RENDER PRODUCTS =====
 function renderProducts() {
@@ -189,6 +231,7 @@ function renderAllProducts(filter = 'all', searchQuery = '') {
         filtered = filtered.filter(p => 
             (p.name && p.name.toLowerCase().includes(q)) ||
             (p.category && p.category.toLowerCase().includes(q)) ||
+            (p.description && p.description.toLowerCase().includes(q)) ||
             (String(p.id).toLowerCase().includes(q))
         );
     }
@@ -209,7 +252,8 @@ function renderAllProducts(filter = 'all', searchQuery = '') {
 
 function createProductCard(product) {
     const badgeClass = getBadgeClass(product.badge);
-    const badgeHTML = product.badge ? `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
+    const badgeHTML = product.badge ? 
+        `<span class="product-badge ${badgeClass}">${product.badge}</span>` : '';
     const oldPriceHTML = product.oldPrice ? `<span class="old-price">${Number(product.oldPrice).toLocaleString()} ${CONFIG.CURRENCY}</span>` : '';
     const imageHTML = product.image ? 
         `<img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-gem\\' style=\\'font-size:50px;color:var(--primary);opacity:0.3;\\'></i>'">` : 
@@ -316,6 +360,7 @@ function openProductModal(productId) {
         </div>
     `;
     
+    // إزالة أي مودال سابق
     const oldModal = document.getElementById('productModal');
     if (oldModal) oldModal.remove();
     
@@ -351,6 +396,7 @@ function initSearch() {
     });
 }
 
+// ===== FILTER PRODUCTS =====
 function filterProducts(category, btnElement) {
     if (btnElement) {
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -388,6 +434,7 @@ function addToCart(productId) {
     updateCartUI();
     showToast(`✅ تمت إضافة "${product.name}" للسلة`);
     
+    // تأثير على زر السلة
     const cartBtn = document.querySelector('.cart-btn');
     if (cartBtn) {
         cartBtn.style.transform = 'scale(1.2)';
@@ -446,7 +493,6 @@ function updateCartUI() {
                 </div>
                 <div class="cart-item-details">
                     <div class="cart-item-name">${item.name}</div>
-                    <div style="font-size:11px; color:var(--gray); margin-bottom:4px;">موديل: #${item.id}</div>
                     <div class="cart-item-price">${Number(item.price).toLocaleString()} ${CONFIG.CURRENCY}</div>
                     <div class="cart-item-qty">
                         <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
@@ -516,6 +562,7 @@ function initMobileMenu() {
         }
     });
     
+    // إغلاق القائمة عند النقر على رابط
     nav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             nav.classList.remove('mobile-active');
@@ -528,6 +575,7 @@ function initMobileMenu() {
     });
 }
 
+// ===== SCROLL ANIMATIONS =====
 function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -546,6 +594,7 @@ function initScrollAnimations() {
     });
 }
 
+// ===== ADMIN LOGIC =====
 function loginAdmin() {
     const password = document.getElementById('adminPassword').value;
     if (password === CONFIG.ADMIN_PASSWORD) {
@@ -576,7 +625,7 @@ function renderAdminProducts() {
     
     tbody.innerHTML = products.map((p, idx) => `
         <tr>
-            <td>${p.id}</td>
+            <td>${idx + 1}</td>
             <td>
                 <div style="display:flex;align-items:center;gap:10px;">
                     ${p.image ? `<img src="${p.image}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">` : ''}
@@ -596,7 +645,144 @@ function renderAdminProducts() {
     `).join('');
 }
 
+function saveProduct() {
+    const id = document.getElementById('prodId').value;
+    const product = {
+        id: id ? parseInt(id) : Date.now(),
+        name: document.getElementById('prodName').value.trim(),
+        category: document.getElementById('prodCategory').value,
+        price: parseFloat(document.getElementById('prodPrice').value) || 0,
+        oldPrice: parseFloat(document.getElementById('prodOldPrice').value) || null,
+        weight: document.getElementById('prodWeight').value.trim(),
+        size: document.getElementById('prodSize').value.trim(),
+        description: document.getElementById('prodDesc').value.trim(),
+        badge: document.getElementById('prodBadge').value,
+        featured: document.getElementById('prodFeatured').value === 'true',
+        image: document.getElementById('prodImage') ? document.getElementById('prodImage').value.trim() : ''
+    };
+    
+    if (!product.name || !product.price) {
+        showToast('⚠️ يرجى ملء الاسم والسعر');
+        return;
+    }
+    
+    if (id) {
+        const index = products.findIndex(p => p.id == id);
+        if (index !== -1) products[index] = product;
+    } else {
+        products.push(product);
+    }
+    
+    saveProducts();
+    clearForm();
+    renderAdminProducts();
+    renderProducts();
+    renderAllProducts();
+    showToast('✅ تم حفظ المنتج بنجاح');
+}
+
+function editProduct(id) {
+    const product = products.find(p => p.id == id);
+    if (!product) return;
+    
+    document.getElementById('prodId').value = product.id;
+    document.getElementById('prodName').value = product.name;
+    document.getElementById('prodCategory').value = product.category;
+    document.getElementById('prodPrice').value = product.price;
+    document.getElementById('prodOldPrice').value = product.oldPrice || '';
+    document.getElementById('prodWeight').value = product.weight;
+    document.getElementById('prodSize').value = product.size;
+    document.getElementById('prodDesc').value = product.description;
+    document.getElementById('prodBadge').value = product.badge;
+    document.getElementById('prodFeatured').value = product.featured.toString();
+    if(document.getElementById('prodImage')) document.getElementById('prodImage').value = product.image || '';
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('📝 جاري تعديل المنتج');
+}
+
+function deleteProduct(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+    products = products.filter(p => p.id != id);
+    saveProducts();
+    renderAdminProducts();
+    renderProducts();
+    renderAllProducts();
+    showToast('🗑️ تم حذف المنتج');
+}
+
+function clearForm() {
+    document.getElementById('prodId').value = '';
+    document.getElementById('prodName').value = '';
+    document.getElementById('prodPrice').value = '';
+    document.getElementById('prodOldPrice').value = '';
+    document.getElementById('prodWeight').value = '';
+    document.getElementById('prodSize').value = '';
+    document.getElementById('prodDesc').value = '';
+    document.getElementById('prodBadge').value = '';
+    document.getElementById('prodFeatured').value = 'false';
+    if(document.getElementById('prodImage')) document.getElementById('prodImage').value = '';
+}
+
+function exportData() {
+    const dataStr = JSON.stringify(products, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'products.json';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('📥 تم تصدير البيانات');
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (Array.isArray(data)) {
+                    products = data;
+                    saveProducts();
+                    renderAdminProducts();
+                    renderProducts();
+                    renderAllProducts();
+                    showToast('✅ تم استيراد البيانات بنجاح');
+                } else {
+                    throw new Error('Invalid format');
+                }
+            } catch (err) {
+                showToast('❌ ملف غير صالح');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+function setProductsURL() {
+    const url = document.getElementById('productsURL').value.trim();
+    if (url) {
+        localStorage.setItem('products_url', url);
+        CONFIG.PRODUCTS_URL = url;
+        showToast('✅ تم حفظ الرابط، جاري التحديث...');
+        loadProductsFromURL(url);
+    } else {
+        localStorage.removeItem('products_url');
+        CONFIG.PRODUCTS_URL = '';
+        showToast('⚠️ تم إزالة الرابط الخارجي');
+    }
+}
+
+// ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', (e) => {
+    // ESC لإغلاق السلة أو المودال
     if (e.key === 'Escape') {
         const cartSidebar = document.getElementById('cartSidebar');
         const modal = document.getElementById('productModal');
