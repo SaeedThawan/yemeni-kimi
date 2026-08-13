@@ -1,0 +1,186 @@
+
+privacy_html = '''<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="سياسة الخصوصية لمتجر عقيق يمني أصيل">
+    <title>سياسة الخصوصية - عقيق يمني أصيل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
+                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">💎</div>
+                    <div class="logo-text">
+                        <h1>عقيق يمني أصيل</h1>
+                        <span>متجر الأحجار الكريمة والسبح</span>
+                    </div>
+                </a>
+
+                <button class="mobile-menu-btn" aria-label="قائمة التصفح">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="nav-links">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="products.html">المنتجات</a></li>
+                    <li><a href="about.html">من نحن</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="header-actions">
+                    <button class="cart-btn" onclick="toggleCart()" title="سلة التسوق">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <a href="https://wa.me/967730413413" class="whatsapp-btn-header" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        واتساب
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PRIVACY POLICY CONTENT -->
+    <section class="policy-page">
+        <div class="container policy-content">
+            <div class="section-title">
+                <h3>سياسة الخصوصية</h3>
+                <p>التزامنا بحماية بياناتك وخصوصيتك</p>
+                <div class="line"></div>
+            </div>
+
+            <h4>1. جمع المعلومات</h4>
+            <p>نحن نحترم خصوصيتك تماماً. المعلومات التي نجمعها تقتصر على ما تزودنا به اختيارياً أثناء التواصل وتأكيد الطلب:</p>
+            <ul>
+                <li>الاسم ورقم الهاتف (عند إتمام الطلب وتحديد عنوان الشحن عبر الواتساب).</li>
+                <li>عنوان ومكان التوصيل لضمان وصول الشحنة.</li>
+            </ul>
+
+            <h4>2. التخزين المحلي (LocalStorage)</h4>
+            <p>يستخدم الموقع خاصية التخزين المحلي في متصفحك (LocalStorage) فقط لتذكر المنتجات التي أضفتها لسلة التسوق وتسهيل تجربة التصفح دون تسجيل دخول أو تتبع للبيانات الشخصية.</p>
+
+            <h4>3. استخدام المعلومات</h4>
+            <p>نستخدم معلومات التواصل الخاصة بك للأغراض التالية فقط:</p>
+            <ul>
+                <li>تأكيد الشراء والتواصل معك بخصوص تفاصيل الشحن والتسليم.</li>
+                <li>متابعة حالة الشحنة حتى وصولها إليك بسلام.</li>
+                <li>الإجابة على استفساراتك حول الأحجار والسبح المعروضة.</li>
+            </ul>
+
+            <h4>4. حماية البيانات</h4>
+            <p>نلتزم بعدم مشاركة أو بيع أي من بياناتك أو أرقام التواصل الخاصة بك لأي طرف ثالث، ويقتصر إعطاء العنوان ورقم التواصل لشركة الشحن الناقلة فقط لإيصال الطلب.</p>
+
+            <h4>5. حقوقك</h4>
+            <p>يحق لك في أي وقت طلب مسح بيانات التواصل الخاصة بك من سجلات المحادثات بمجرد استلام طلبك وتأكيد وصوله.</p>
+
+            <div style="margin-top: 40px; padding: 25px; background: var(--light); border-radius: var(--radius-lg); text-align: center; color: var(--gray); border: 2px solid #E5E7EB;">
+                <i class="fas fa-shield-alt" style="font-size: 32px; color: var(--gold); margin-bottom: 12px; display: block;"></i>
+                <strong style="color: var(--primary); font-size: 16px;">آخر تحديث:</strong> أغسطس 2026
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>عن المتجر</h4>
+                    <p>متجر متخصص في بيع العقيق اليمني الأصلي والأحجار الكريمة والسبح الفاخرة المباشرة من المصدر.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="سناب شات"><i class="fab fa-snapchat"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="products.html">المنتجات</a></li>
+                        <li><a href="about.html">من نحن</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="admin.html">⚙️ لوحة الإدارة</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>سياسات المتجر</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html" style="color: var(--gold); font-weight: 700;">سياسة الخصوصية</a></li>
+                        <li><a href="return.html">سياسة الإرجاع</a></li>
+                        <li><a href="terms.html">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 عقيق يمني أصيل. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 سلة التسوق</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>السلة فارغة</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cartTotal">0 ريال</span>
+            </div>
+            <button class="checkout-btn" onclick="checkoutWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                إتمام الطلب عبر واتساب
+            </button>
+        </div>
+    </div>
+
+    <!-- WHATSAPP FLOAT BUTTON -->
+    <div class="whatsapp-float">
+        <a href="https://wa.me/967730413413" target="_blank" title="تواصل معنا عبر واتساب" aria-label="واتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">تمت الإضافة للسلة</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>'''
+
+with open('/mnt/agents/output/privacy.html', 'w', encoding='utf-8') as f:
+    f.write(privacy_html)
+
+print("✅ privacy.html تم إنشاؤه بنجاح!")
+print(f"📊 الحجم: {len(privacy_html)} حرف")

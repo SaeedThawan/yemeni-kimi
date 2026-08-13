@@ -1,0 +1,203 @@
+
+contact_html = '''<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تواصل مع متجر عقيق يمني أصيل - محمد مقبل ومازن الصانع">
+    <title>اتصل بنا - عقيق يمني أصيل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
+                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">💎</div>
+                    <div class="logo-text">
+                        <h1>عقيق يمني أصيل</h1>
+                        <span>متجر الأحجار الكريمة والسبح</span>
+                    </div>
+                </a>
+
+                <button class="mobile-menu-btn" aria-label="قائمة التصفح">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="nav-links">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="products.html">المنتجات</a></li>
+                    <li><a href="about.html">من نحن</a></li>
+                    <li><a href="contact.html" class="active">اتصل بنا</a></li>
+                </ul>
+                <div class="header-actions">
+                    <button class="cart-btn" onclick="toggleCart()" title="سلة التسوق">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <a href="https://wa.me/967730413413" class="whatsapp-btn-header" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        واتساب
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTACT SECTION -->
+    <section style="padding: 80px 0; background: var(--white); min-height: 70vh;">
+        <div class="container" style="max-width: 1000px;">
+            <div class="section-title">
+                <h3>اتصل بنا</h3>
+                <p>نحن هنا لمساعدتك والإجابة على استفساراتك حول الأحجار والطلبات</p>
+                <div class="line"></div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px;">
+                <!-- بطاقة محمد مقبل -->
+                <div style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 40px 30px; border-radius: var(--radius-lg); text-align: center; color: var(--white); box-shadow: var(--shadow-md); border: 1px solid rgba(212,175,55,0.3); transition: var(--transition);">
+                    <div style="width:70px;height:70px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:30px;">
+                        <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+                    </div>
+                    <h4 style="margin-bottom: 6px; font-size: 22px; font-weight: 900;">محمد مقبل</h4>
+                    <p style="margin-bottom: 24px; opacity: 0.9; font-weight: 700; color: var(--gold-light); font-size: 18px; letter-spacing: 1px;">+967 730 413 413</p>
+                    <a href="https://wa.me/967730413413" style="background: #25D366; color: #fff; display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; font-size: 15px; border-radius: 30px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 15px rgba(37,211,102,0.3); transition: var(--transition);" target="_blank" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                        <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+                    </a>
+                </div>
+
+                <!-- بطاقة مازن الصانع -->
+                <div style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 40px 30px; border-radius: var(--radius-lg); text-align: center; color: var(--white); box-shadow: var(--shadow-md); border: 1px solid rgba(212,175,55,0.3); transition: var(--transition);">
+                    <div style="width:70px;height:70px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:30px;">
+                        <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+                    </div>
+                    <h4 style="margin-bottom: 6px; font-size: 22px; font-weight: 900;">مازن الصانع</h4>
+                    <p style="margin-bottom: 24px; opacity: 0.9; font-weight: 700; color: var(--gold-light); font-size: 18px; letter-spacing: 1px;">+967 734 931 886</p>
+                    <a href="https://wa.me/967734931886" style="background: #25D366; color: #fff; display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; font-size: 15px; border-radius: 30px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 15px rgba(37,211,102,0.3); transition: var(--transition);" target="_blank" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                        <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+                    </a>
+                </div>
+
+                <!-- بطاقة البريد الإلكتروني -->
+                <div style="background: var(--light); padding: 40px 30px; border-radius: var(--radius-lg); text-align: center; border: 2px solid #E5E7EB; transition: var(--transition);">
+                    <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;color:var(--primary-dark);">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 style="margin-bottom: 12px; font-size: 22px; color: var(--primary); font-weight: 900;">البريد الإلكتروني</h4>
+                    <p style="margin-bottom: 12px; color: var(--dark); font-weight: 700; font-size: 16px;">info@yemeni-agates.com</p>
+                    <p style="font-size: 14px; color: var(--gray);">نرد على جميع الاستفسارات خلال 24 ساعة</p>
+                </div>
+            </div>
+
+            <!-- موقع الشحن والتوصيل -->
+            <div style="background: linear-gradient(135deg, var(--light), #fff); padding: 40px; border-radius: var(--radius-lg); text-align: center; border-right: 4px solid var(--gold); box-shadow: var(--shadow-sm);">
+                <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--gold);">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h4 style="color: var(--primary); margin-bottom: 12px; font-size: 22px; font-weight: 900;">خدمات الشحن والتوصيل</h4>
+                <p style="color: var(--dark); font-weight: 700; margin-bottom: 10px; font-size: 16px;">الشحن مباشر من اليمن لجميع دول الخليج والعالم</p>
+                <p style="color: var(--gray); font-size: 15px; line-height: 1.8;">يتم تغليف الأحجار والسبح بعناية فائقة لضمان وصولها بسلامة كاملة. نتعامل مع أفضل شركات الشحن لضمان سرعة الوصول.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>عن المتجر</h4>
+                    <p>متجر متخصص في بيع العقيق اليمني الأصلي والأحجار الكريمة والسبح الفاخرة المباشرة من المصدر.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="سناب شات"><i class="fab fa-snapchat"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="products.html">المنتجات</a></li>
+                        <li><a href="about.html">من نحن</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="admin.html">⚙️ لوحة الإدارة</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>سياسات المتجر</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">سياسة الخصوصية</a></li>
+                        <li><a href="return.html">سياسة الإرجاع</a></li>
+                        <li><a href="terms.html">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 عقيق يمني أصيل. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 سلة التسوق</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>السلة فارغة</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cartTotal">0 ريال</span>
+            </div>
+            <button class="checkout-btn" onclick="checkoutWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                إتمام الطلب عبر واتساب
+            </button>
+        </div>
+    </div>
+
+    <!-- WHATSAPP FLOAT BUTTON -->
+    <div class="whatsapp-float">
+        <a href="https://wa.me/967730413413" target="_blank" title="تواصل معنا عبر واتساب" aria-label="واتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">تمت الإضافة للسلة</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>'''
+
+with open('/mnt/agents/output/contact.html', 'w', encoding='utf-8') as f:
+    f.write(contact_html)
+
+print("✅ contact.html تم إنشاؤه بنجاح!")
+print(f"📊 الحجم: {len(contact_html)} حرف")

@@ -1,0 +1,193 @@
+
+terms_html = '''<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="شروط الاستخدام لمتجر عقيق يمني أصيل">
+    <title>شروط الاستخدام - عقيق يمني أصيل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <span>🚚 شحن مجاني للطلبات فوق 500 ريال | ✅ ضمان أصالة 100%</span>
+                <span>📞 للطلب: +967 730 413 413 | +967 734 931 886</span>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">💎</div>
+                    <div class="logo-text">
+                        <h1>عقيق يمني أصيل</h1>
+                        <span>متجر الأحجار الكريمة والسبح</span>
+                    </div>
+                </a>
+
+                <button class="mobile-menu-btn" aria-label="قائمة التصفح">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="nav-links">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="products.html">المنتجات</a></li>
+                    <li><a href="about.html">من نحن</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="header-actions">
+                    <button class="cart-btn" onclick="toggleCart()" title="سلة التسوق">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <a href="https://wa.me/967730413413" class="whatsapp-btn-header" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        واتساب
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- TERMS CONTENT -->
+    <section class="policy-page">
+        <div class="container policy-content">
+            <div class="section-title">
+                <h3>شروط الاستخدام</h3>
+                <p>الشروط والأحكام الخاصة بمتجرنا</p>
+                <div class="line"></div>
+            </div>
+
+            <h4>1. قبول الشروط</h4>
+            <p>باستخدامك لموقع "عقيق يمني أصيل"، فإنك توافق على هذه الشروط والأحكام. إذا كنت لا توافق على أي جزء منها، يرجى عدم استخدام الموقع.</p>
+
+            <h4>2. المنتجات والأسعار</h4>
+            <ul>
+                <li>جميع المنتجات المعروضة هي أصلية وطبيعية 100% ومستخرجة من جبال ومناجم اليمن.</li>
+                <li>الأسعار المعروضة قابلة للتأكيد والاتفاق النهائي بحسب العملة وطريقة الدفع المعتمدة.</li>
+                <li>نحتفظ بالحق في تعديل الأسعار أو تحديث حالة المنتجات غير المتوفرة.</li>
+                <li>الصور المعروضة تطابق المنتج الفعلي بدقة، وقد تختلف نغمات الإضاءة بسيطاً بحسب الشاشة.</li>
+            </ul>
+
+            <h4>3. الطلبات والدفع</h4>
+            <ul>
+                <li>يتم الطلب وتأكيد الشراء عبر الواتساب المباشر بعد اختيار المنتجات.</li>
+                <li>الدفع يتم عبر التحويل البنكي أو الوسائل المالية المعتمدة والمُتفق عليها أثناء التواصل.</li>
+                <li>الطلب يُعتبر مؤكداً رسمياً بعد التواصل معنا والاتفاق على تفاصيل القطعة والشحن.</li>
+            </ul>
+
+            <h4>4. الشحن والتوصيل</h4>
+            <ul>
+                <li>نوفر خدمة الشحن والتغليف الآمن لجميع دول الخليج والعالم.</li>
+                <li>تحدد تكلفة الشحن ومدة الوصول بحسب الدولة والمنطقة وشركة الشحن المختارة.</li>
+                <li>نلتزم بتزويد العميل برقم تتبع الشحنة فور إرسالها.</li>
+            </ul>
+
+            <h4>5. الملكية الفكرية</h4>
+            <p>جميع المحتويات على الموقع (الشعار، الصور، النصوص، والتصاميم) هي ملك لمتجر "عقيق يمني أصيل" ولا يجوز إعادة استخدامها دون إذن مسبق.</p>
+
+            <h4>6. القانون الساري</h4>
+            <p>تخضع هذه الشروط والأحكام للقوانين والأنظمة التجارية المعمول بها والمنظمة للبيع والشراء الإلكتروني.</p>
+
+            <div style="margin-top: 40px; padding: 25px; background: var(--light); border-radius: var(--radius-lg); text-align: center; color: var(--gray); border: 2px solid #E5E7EB;">
+                <i class="fas fa-gavel" style="font-size: 32px; color: var(--gold); margin-bottom: 12px; display: block;"></i>
+                <strong style="color: var(--primary); font-size: 16px;">آخر تحديث:</strong> أغسطس 2026
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>عن المتجر</h4>
+                    <p>متجر متخصص في بيع العقيق اليمني الأصلي والأحجار الكريمة والسبح الفاخرة المباشرة من المصدر.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="سناب شات"><i class="fab fa-snapchat"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="products.html">المنتجات</a></li>
+                        <li><a href="about.html">من نحن</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                        <li><a href="admin.html">⚙️ لوحة الإدارة</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>سياسات المتجر</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">سياسة الخصوصية</a></li>
+                        <li><a href="return.html">سياسة الإرجاع</a></li>
+                        <li><a href="terms.html" style="color: var(--gold); font-weight: 700;">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <p><i class="fab fa-whatsapp"></i> +967 730 413 413 (محمد مقبل)</p>
+                    <p><i class="fab fa-whatsapp"></i> +967 734 931 886 (مازن الصانع)</p>
+                    <p><i class="fas fa-envelope"></i> info@yemeni-agates.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 عقيق يمني أصيل. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 سلة التسوق</h3>
+            <button class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>السلة فارغة</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cartTotal">0 ريال</span>
+            </div>
+            <button class="checkout-btn" onclick="checkoutWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                إتمام الطلب عبر واتساب
+            </button>
+        </div>
+    </div>
+
+    <!-- WHATSAPP FLOAT BUTTON -->
+    <div class="whatsapp-float">
+        <a href="https://wa.me/967730413413" target="_blank" title="تواصل معنا عبر واتساب" aria-label="واتساب">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">تمت الإضافة للسلة</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>'''
+
+with open('/mnt/agents/output/terms.html', 'w', encoding='utf-8') as f:
+    f.write(terms_html)
+
+print("✅ terms.html تم إنشاؤه بنجاح!")
+print(f"📊 الحجم: {len(terms_html)} حرف")
